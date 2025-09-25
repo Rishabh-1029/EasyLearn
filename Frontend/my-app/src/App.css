@@ -1,0 +1,25 @@
+.App{
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.App h2{
+  margin-bottom: 20px;
+}
+
+.App input{
+  margin-right: 10px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.App button{
+  padding: 5px 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.App p{
+  margin-top: 20px;
+  font-size: 18px;
+}
