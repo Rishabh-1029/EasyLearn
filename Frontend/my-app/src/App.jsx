@@ -69,7 +69,7 @@ function App() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Type your query..."
+          placeholder="Ask anything..."
         />
         <button onClick={handleSubmit}>Send</button>
       </div>
