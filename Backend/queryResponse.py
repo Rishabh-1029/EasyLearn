@@ -12,7 +12,7 @@ model = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
 
 def response(user_query):
     messages = [
-        SystemMessage(content="You are a teacher who answers in 3 lines about the asked concept."),
+        SystemMessage(content="You are a teacher. Explain in short so that a normal person understands, respond with 4 lines only"),
         HumanMessage(content=user_query),
     ]
 
