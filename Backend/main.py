@@ -15,6 +15,8 @@ app.add_middleware(
 
 class QueryRequest(BaseModel):
     user_query: str
+    model: str = "Gemini"
+    level: str = "Short"
     
 @app.get("/")
 def root():
@@ -22,5 +24,5 @@ def root():
     
 @app.post("/ask")
 async def ask_question(request: QueryRequest):
-    sys_response = response(request.user_query)
+    sys_response = response(request.user_query, request.model, request.level)
     return {"response": sys_response}
