@@ -17,7 +17,7 @@ Our **LLM (Large Language Model)** then generates study notes at three levels:
 - *Can add or change technologies according to project requirements.*  
 
 ## UI
-![EasyLearn UI](Frontend/my-app/src/assets/image.png)
+![EasyLearn UI](Frontend/my-app/src/assets/op_1.png)
 
 
 ## Goal
