@@ -9,6 +9,9 @@ function Home() {
   // UserQuery
   const [query, setQuery] = useState("");
 
+    // Model & Level
+  const [model, setModel] = useState("");
+  const [level, setLevel] = useState("");
 
   // Message
   const [messages, setMessages] = useState([
@@ -49,7 +52,7 @@ function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_query: userQuery }),
+        body: JSON.stringify({ user_query: userQuery, model: model || "gemini", level: level || "Short" }),
       });
 
 
@@ -84,8 +87,25 @@ function Home() {
 
       {/* EasyLearn Title */}
       <div className="chat-header">
+      <div>
         <span className="easy">Easy</span>
         <span className="learn">Learn</span>
+      </div>
+      <div>
+
+        {/* Select Model */}
+        <select value={model} onChange={(e) => setModel(e.target.value)}>
+            <option value="Gemini">Gemini</option>
+            <option value="DeepSeek">DeepSeek</option>
+          </select>
+
+        {/* Select Level */}
+        <select value={level} onChange={(e) => setLevel(e.target.value)}>
+            <option value="Short">Short</option>
+            <option value="Descriptive">Descriptive</option>
+            <option value="Detailed">Detailed</option>
+          </select>
+      </div>
       </div>
 
 

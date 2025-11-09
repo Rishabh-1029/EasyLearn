@@ -30,31 +30,74 @@ body {
 
 /* Header */
 .chat-header {
-  background: linear-gradient(90deg, #3122fa, #7bb8fd);
+  background: linear-gradient(90deg, #3122fa, #021874dc);
   color: white;
-  font-family: "Roboto", sans-serif;
-  font-style: italic;
-  /* font-size: 26px; */
-  padding: 20px;
-  /* text-align: center; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
   font-weight: bold;
+  font-family: "Roboto", sans-serif;
   letter-spacing: 0.5px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-.easy {
+/* Title (EasyLearn) */
+.chat-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.easy,
+.learn {
   font-size: 30px;
   font-weight: 600;
-  background: linear-gradient(90deg, #a7f282e1, #e2f8df);
+  font-style: italic;
+  background: linear-gradient(90deg, #e6ffb2, #c8fcd0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
-.learn {
- font-size: 30px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #a7f282e1, #e2f8df);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Container for dropdowns */
+.chat-header > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Dropdowns */
+.chat-header select {
+  padding: 8px 16px;
+  border-radius: 18px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: linear-gradient(135deg,#3123ff,#438ce6);
+  color: white;
+  font-weight: 500;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  width: auto;
+  min-width: 100px;
+  text-align: center;
+  text-align-last: center;
+}
+
+.chat-header select:focus,
+.chat-header select:hover {
+  background: linear-gradient(120deg, #438ce6, #3123ff);
+}
+
+.chat-header select option {
+  color: #222;
+  background: white;
+  text-align: left;
 }
 
 
@@ -116,7 +159,7 @@ body {
   padding: 12px 14px;
   background-color: #dcecff;
   border-top: 1.6px solid #b1cff1;
-  background: linear-gradient(135deg, #b1cff1, #dcecff);
+  background: linear-gradient(135deg, #021874dc, #dcecff);
 }
 
 /* Input Box */
