@@ -25,4 +25,6 @@ def root():
 @app.post("/ask")
 async def ask_question(request: QueryRequest):
     sys_response = response(request.user_query, request.model, request.level)
-    return {"response": sys_response}
+    return {"response": sys_response,
+            "model": request.model,
+            "level": request.level}
