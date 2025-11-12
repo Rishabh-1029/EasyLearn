@@ -20,7 +20,7 @@ class QueryRequest(BaseModel):
     
 @app.get("/")
 def root():
-    return {"Welcome": "EasyLearn"}
+    return {"EasyLearn": "A platform for learners by Rishabh Surana"}
     
 @app.post("/ask")
 async def ask_question(request: QueryRequest):

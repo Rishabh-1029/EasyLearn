@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
 
+
 load_dotenv()
 
 # --- Cache for loaded models ---
@@ -13,10 +14,9 @@ MODEL_CACHE = {}
 # ------------------ Model Selection ------------------
 
 def get_model(model_name: str):
-    """
-    Return a cached model instance.
-    If not available, initialize and cache it.
-    """
+  
+    # Return a cached model instance. If not available, initialize and cache it.
+
     name = model_name.lower()
 
     # If model already initialized, return it
@@ -28,16 +28,31 @@ def get_model(model_name: str):
         key = os.environ.get("GOOGLE_API_KEY")
         if not key:
             raise ValueError("[ERROR] GOOGLE API key missing. Please set GOOGLE_API_KEY in your .env.")
-        model = init_chat_model("gemini-2.5-flash", model_provider="google_genai", api_key = key)
+        model = init_chat_model("gemini-2.5-flash", 
+                                model_provider="google_genai", 
+                                api_key = key
+                            )
     
     elif name == "deepseek":       
         key = os.environ.get("DEEPSEEK_API_KEY")
         if not key:
             raise ValueError("[ERROR] DeepSeek API key missing. Please set DEEPSEEK_API_KEY in your .env.")
-        model = init_chat_model("deepseek-chat", model_provider="deepseek", api_key = key)
+        model = init_chat_model("deepseek-chat", 
+                                model_provider="deepseek", 
+                                api_key = key
+                            )
    
+    elif name == "claude":
+        key = os.environ.get("HF_MOONSHOT_AI_TOKEN")
+        if not key:
+            raise ValueError("[ERROR] Hugging Face Moonshot AI API key missing. Please set HF_MOONSHOT_AI_TOKEN in your .env.")
+        model = init_chat_model("moonshotai/Kimi-K2-Thinking:novita",
+                                model_provider="openai",
+                                api_key = key,
+                                base_url="https://router.huggingface.co/v1"
+                            )
     else:
-        raise ValueError(f"Unknown model '{model_name}'. Please use 'Gemini' or 'DeepSeek'.")
+        raise ValueError(f"Unknown model '{model_name}'. Please use 'Gemini','DeepSeek' or 'Claude Kimi Moonshotai'.")
 
     # Cache it for future use
     MODEL_CACHE[name] = model

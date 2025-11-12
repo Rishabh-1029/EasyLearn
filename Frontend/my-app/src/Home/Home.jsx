@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import "./Home.css";
 
-// Functions
 function Home() {
-  // UserQuery
+  // UserQuery, Model & Level
   const [query, setQuery] = useState("");
-
-  // Model & Level
   const [model, setModel] = useState("");
   const [level, setLevel] = useState("");
 
@@ -58,6 +55,7 @@ function Home() {
 
       // Updating AI response
       const data = await res.json();
+
       setMessages((prev) => [
         ...prev,
         {
@@ -68,7 +66,6 @@ function Home() {
         },
       ]);
     } catch (error) {
-      // Error Handling
       console.error("ERROR :", error);
       setMessages((prev) => [
         ...prev,
@@ -96,6 +93,7 @@ function Home() {
           <select value={model} onChange={(e) => setModel(e.target.value)}>
             <option value="Gemini">Gemini</option>
             <option value="DeepSeek">DeepSeek</option>
+            <option value="Claude">Claude</option>
           </select>
 
           {/* Select Level */}
