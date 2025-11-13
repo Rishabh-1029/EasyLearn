@@ -19,9 +19,20 @@ Our **LLM (Large Language Model)** then generates study notes at three levels:
 - **Frontend**: ReactJS
 - _Can add or change technologies according to project requirements._
 
-## UI
+## UI Previews
 
-![EasyLearn UI](Frontend/my-app/src/assets/op_1.png)
+### Home Page
+
+![Home Page](Frontend/my-app/src/assets/Home_Page.png)
+
+### Example Outputs
+
+![Example Output 1](Frontend/my-app/src/assets/Output_Example_1.png)
+![Example Output 2](Frontend/my-app/src/assets/Output_Example_2.png)
+
+### Available Models
+
+![Available Models](Frontend/my-app/src/assets/Models.png)
 
 ## Goal
 

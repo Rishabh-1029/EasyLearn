@@ -92,8 +92,10 @@ function Home() {
           {/* Select Model */}
           <select value={model} onChange={(e) => setModel(e.target.value)}>
             <option value="Gemini">Gemini</option>
-            <option value="DeepSeek">DeepSeek</option>
-            <option value="Claude">Claude</option>
+            <option value="chatgpt">ChatGPT</option>
+            <option value="Llama">Meta llama</option>
+            <option value="DeepSeek">DeepSeek-V3</option>
+            <option value="nvidia">Nvidia Nemotron-H</option>
           </select>
 
           {/* Select Level */}
