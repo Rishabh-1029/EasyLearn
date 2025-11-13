@@ -32,27 +32,48 @@ def get_model(model_name: str):
                                 model_provider="google_genai", 
                                 api_key = key
                             )
-    
-    elif name == "deepseek":       
-        key = os.environ.get("DEEPSEEK_API_KEY")
+        
+    elif name == "llama":
+        key = os.environ.get("HF_AI_TOKEN")
         if not key:
-            raise ValueError("[ERROR] DeepSeek API key missing. Please set DEEPSEEK_API_KEY in your .env.")
-        model = init_chat_model("deepseek-chat", 
-                                model_provider="deepseek", 
-                                api_key = key
+            raise ValueError("[ERROR] Hugging Face Meta llama API key missing. Please set HF_AI_TOKEN in your .env.")
+        model = init_chat_model("meta-llama/Llama-3.1-8B-Instruct:novita",
+                                model_provider="openai",
+                                api_key = key,
+                                base_url="https://router.huggingface.co/v1"
                             )
-   
-    elif name == "claude":
-        key = os.environ.get("HF_MOONSHOT_AI_TOKEN")
+        
+    elif name == "deepseek":
+        key = os.environ.get("HF_AI_TOKEN")
         if not key:
-            raise ValueError("[ERROR] Hugging Face Moonshot AI API key missing. Please set HF_MOONSHOT_AI_TOKEN in your .env.")
-        model = init_chat_model("moonshotai/Kimi-K2-Thinking:novita",
+            raise ValueError("[ERROR] DeepSeek API key missing. Please set HF_AI_TOKEN in your .env.")
+        model = init_chat_model("deepseek-ai/DeepSeek-V3-0324:novita",
+                                model_provider="openai",
+                                api_key = key,
+                                base_url="https://router.huggingface.co/v1"
+                            )
+        
+    elif name == "chatgpt":
+        key = os.environ.get("HF_AI_TOKEN")
+        if not key:
+            raise ValueError("[ERROR] DeepSeek API key missing. Please set HF_AI_TOKEN in your .env.")
+        model = init_chat_model("openai/gpt-oss-20b:groq",
+                                model_provider="openai",
+                                api_key = key,
+                                base_url="https://router.huggingface.co/v1"
+                            )
+        
+    elif name == "nvidia":
+        key = os.environ.get("HF_AI_TOKEN")
+        if not key:
+            raise ValueError("[ERROR] DeepSeek API key missing. Please set HF_AI_TOKEN in your .env.")
+        model = init_chat_model("nvidia/NVIDIA-Nemotron-Nano-12B-v2:nebius",
                                 model_provider="openai",
                                 api_key = key,
                                 base_url="https://router.huggingface.co/v1"
                             )
     else:
-        raise ValueError(f"Unknown model '{model_name}'. Please use 'Gemini','DeepSeek' or 'Claude Kimi Moonshotai'.")
+        raise ValueError(f"Unknown model '{model_name}'.")
 
     # Cache it for future use
     MODEL_CACHE[name] = model
