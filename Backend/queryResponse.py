@@ -2,6 +2,8 @@ import os
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
 
 
 load_dotenv()
@@ -9,6 +11,26 @@ load_dotenv()
 # --- Cache for loaded models ---
 MODEL_CACHE = {}
 
+class ShortResponse(BaseModel):
+    title: str = Field(description="Short-title")
+    summary: str = Field(description="4-5 Line explanation")
+    example: str = Field(description="Simple example")
+
+class DescriptiveResponse(BaseModel):
+    title: str = Field(description="Short-title")
+    summary: str = Field(description="7-8 Line explanation") 
+    example: str = Field(description="Simple example")
+class DetailedResponse(BaseModel):
+    title: str = Field(description="Short-title")
+    summary: str = Field(description="7-8 Line explanation") 
+    key_points: list[str] = Field(description="Important bullet points")
+    example: str = Field(description="descriptive example")
+
+SCHEMA_MAP = {
+    "Short": ShortResponse,
+    "Descriptive": DescriptiveResponse,
+    "Detailed": DetailedResponse
+}
 
 
 # ------------------ Model Selection ------------------
@@ -91,14 +113,20 @@ def response(user_query: str, model_name: str = "Gemini", level: str = "Short"):
     except ValueError as err:
         return str(err)
 
-    # Level-based system prompt
-    level_prompts = {
-        "short": "You are a teacher. Explain in 3-4 simple lines.",
-        "descriptive": "You are a teacher. Explain in moderate detail (around 7-8 lines).",
-        "detailed": "You are a detailed instructor. Explain deeply in around 10-15 lines, with examples if needed.",
-    }
+    schema_class = SCHEMA_MAP.get(level, ShortResponse)
+    parser = PydanticOutputParser(pydantic_object=schema_class)
+    format_instruction = parser.get_format_instructions()
 
-    system_prompt = level_prompts.get(level.lower(), level_prompts["short"])
+    # Level-based system prompt
+    # level_prompts = {
+    #     "short": "You are a teacher. Explain in 3-4 simple lines.",
+    #     "descriptive": "You are a teacher. Explain in moderate detail (around 7-8 lines).",
+    #     "detailed": "You are a detailed instructor. Explain deeply in around 10-15 lines, with examples if needed.",
+    # }
+
+    # system_prompt = level_prompts.get(level.lower(), level_prompts["short"])
+
+    system_prompt = f""" You are an intelligent teaching expert of {user_query} Respond ONLY in valid JSON format. Follow this structure exactly: {format_instruction} with no bold strings"""
 
     messages = [
         SystemMessage(content=system_prompt),
@@ -107,7 +135,9 @@ def response(user_query: str, model_name: str = "Gemini", level: str = "Short"):
 
     try:
         ai_response = model.invoke(messages)
-        return ai_response.content
+        parsed = parser.parse(ai_response.content)
+        return parsed
+    
     except Exception as e:
         return f"Something went wrong while generating the response with model '{model_name}': {e}"
 

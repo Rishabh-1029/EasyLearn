@@ -25,6 +25,8 @@ def root():
 @app.post("/ask")
 async def ask_question(request: QueryRequest):
     sys_response = response(request.user_query, request.model, request.level)
+    if hasattr(sys_response, "model_dump"):
+        sys_response = sys_response.model_dump()
     return {"response": sys_response,
             "model": request.model,
             "level": request.level}
