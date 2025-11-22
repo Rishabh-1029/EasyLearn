@@ -15,16 +15,24 @@ body {
 
 /* Chat Container */
 .chat-container {
-  max-width: 1700px;
-  width: 64vw;
-  height: 88vh;
+  max-width: 1400px;
+  width: 90%;
+  height: 100vh;
+  margin: 0 auto;
+
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
+
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-  background-color: #d8f3f9;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  background: linear-gradient(135deg, #f8fbff, #eaf6fb);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  backdrop-filter: blur(4px);
 }
 
 /* Header */
@@ -156,12 +164,12 @@ body {
   align-items: flex-start;
 }
 
-/* Header section (model + level) */
+/* Header section */
 .bot-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* ensures full width of the bubble */
+  width: 100%;
   margin-bottom: 6px;
 }
 
@@ -177,14 +185,84 @@ body {
   padding: 2px 6px;
   font-size: 11px;
   font-weight: 500;
-  margin-left: auto; /* pushes tag to the right */
+  margin-left: auto;
 }
 
-/* Bot main text */
+/* Bot message container */
 .bot-text {
-  font-size: 15px;
-  color: #222;
-  margin: 4px 0 8px;
+  font-size: 15.5px;
+  color: #1f2937;
+  margin: 6px 0 10px;
+}
+
+/* Structured response card */
+.structured-response {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+/* Title */
+.structured-response h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: 0.2px;
+}
+
+/* Section separators */
+.structured-response hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+  margin: 12px 0;
+}
+
+/* Paragraph text */
+.structured-response p {
+  margin: 6px 0;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Section headings (bold labels like Explanation, Example, etc.) */
+.structured-response strong {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Key points container */
+.points-section {
+  margin: 6px 0;
+}
+
+/* Key points heading */
+.points-section strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Bullet list */
+.points-section ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+/* Bullet items */
+.points-section li {
+  margin-bottom: 5px;
+  line-height: 1.5;
+  color: #374151;
+}
+
+/* Subtle hover effect */
+.structured-response:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
 }
 
 /* Save button */

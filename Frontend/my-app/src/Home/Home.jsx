@@ -128,7 +128,38 @@ function Home() {
                       : "Level"}
                   </span>
                 </div>
-                <div className="bot-text">{msg.text}</div>
+                <div className="bot-text">
+                  {typeof msg.text === "object" ? (
+                    <div className="structured-response">
+                      <h2>{msg.text.title}</h2>
+                      <hr />
+                      <p>
+                        <strong>Explanation:</strong>
+                        {msg.text.summary}
+                        <hr />
+                      </p>
+
+                      {Array.isArray(msg.text.key_points) && (
+                        <div className="points-section">
+                          <strong>Key Points:</strong>
+                          <ul>
+                            {msg.text.key_points.map((point, i) => (
+                              <li key={i}>{point}</li>
+                            ))}
+                          </ul>
+                          <hr />
+                        </div>
+                      )}
+
+                      <p>
+                        <strong>Example:</strong>
+                        {msg.text.example}
+                      </p>
+                    </div>
+                  ) : (
+                    msg.text
+                  )}
+                </div>
                 <button
                   className="save-btn"
                   onClick={() => handleSaveMessage(msg)}
