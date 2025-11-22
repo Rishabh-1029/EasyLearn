@@ -1,6 +1,6 @@
 # EasyLearn
 
-## **EasyLearn** is an **LLM-based chatbot** designed to help learners understand topics at different depths of understanding through structured and adaptive explanations.
+**EasyLearn** is an **LLM-based chatbot** designed to help learners understand topics at different depths of understanding through structured and adaptive explanations.
 
 ## Project Idea
 
