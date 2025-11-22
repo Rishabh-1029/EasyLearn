@@ -1,8 +1,6 @@
 # EasyLearn
 
-Working on an **LLM-based chatbot** designed to help learners understand topics at different levels of depth.
-
----
+## **EasyLearn** is an **LLM-based chatbot** designed to help learners understand topics at different depths of understanding through structured and adaptive explanations.
 
 ## Project Idea
 
@@ -15,8 +13,8 @@ Our **LLM (Large Language Model)** then generates study notes at three levels:
 
 ## Tech Stack
 
-- **Backend**: Python, LangChain, FastAPI
-- **Frontend**: ReactJS
+- **Backend**: Python, LangChain, FastAPI, Pydantic, Uvicorn
+- **Frontend**: ReactJS, HTML, CSS, JavaScript
 - _Can add or change technologies according to project requirements._
 
 ## UI Previews
