@@ -83,11 +83,13 @@ function Home() {
   return (
     <div className="chat-container">
       {/* EasyLearn Title */}
+
       <div className="chat-header">
         <div>
           <span className="easy">Easy</span>
           <span className="learn">Learn</span>
         </div>
+
         <div>
           {/* Select Model */}
           <select value={model} onChange={(e) => setModel(e.target.value)}>
