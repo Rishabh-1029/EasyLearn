@@ -38,7 +38,7 @@ function Home() {
 
     try {
       // BackEnd interaction with FastAPI.
-      const res = await fetch("http://localhost:10000/ask", {
+      const res = await fetch("https://easylearn-q62w.onrender.com/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

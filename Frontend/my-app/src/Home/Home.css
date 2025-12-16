@@ -11,12 +11,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100svh;
 }
 
 /* Chat Container */
 .chat-container {
   max-width: 1400px;
-  width: 600px;
+  width: 55vw;
   height: 100vh;
   margin: 0 auto;
 
@@ -341,5 +342,12 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    width: 100vw;
+    min-height: 100svh;
   }
 }
