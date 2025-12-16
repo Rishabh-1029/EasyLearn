@@ -5,8 +5,12 @@ pydantic
 langchain 
 langsmith
 langchain-openai
+langchain-google-genai
 openai
 
 python-dotenv
 openai 
 faiss-cpu
+
+transformers
+huggingface_hub
