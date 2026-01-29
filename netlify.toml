@@ -1,0 +1,4 @@
+[build]
+  base = "Frontend/my-app"
+  command = "npm run build"
+  publish = "build"
