@@ -38,4 +38,4 @@ To make learning **personalized and adaptive**, catering to beginners, intermedi
 
 ---
 
-_Currently under development._
+_Currently under development (V2 in R&D phase)._
