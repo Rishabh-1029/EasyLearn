@@ -83,9 +83,13 @@ defaults to `http://localhost:8000`.
 
 To enable Drive saves, enable the Google Drive API in the OAuth client’s Google
 Cloud project and add `http://localhost:5173` to its authorized JavaScript
-origins. Add your deployed frontend origin there for production. Keep
-`CORS_ORIGINS` in the backend environment set to the exact frontend origin(s).
-While the OAuth app is in testing, add your Google account as a test user.
+origins. Add your deployed frontend origin there for production. The production
+origin `https://easy-learn-ai.netlify.app` and local Vite origins are allowed by
+default. Set `CORS_ORIGINS` in the backend environment to add any other exact
+frontend origins. For the Netlify frontend and Render backend, set
+`AUTH_COOKIE_SAMESITE=none` and keep `AUTH_COOKIE_SECURE=true` so the browser
+will send the sign-in cookie across those sites. While the OAuth app is in
+testing, add your Google account as a test user.
 
 ### 2. Start the backend
 
@@ -133,13 +137,13 @@ sources available for your question.
 | `GOOGLE_CLIENT_ID`      | Backend  | The same client ID, used to verify sign-in credentials.                 |
 | `AUTH_SESSION_SECRET`   | Backend  | Random secret of at least 32 characters for signing the session cookie. |
 | `AUTH_COOKIE_SECURE`    | Backend  | `true` for HTTPS; use `false` only for local HTTP development.          |
-| `AUTH_COOKIE_SAMESITE`  | Backend  | Session cookie policy; default is `lax`.                                |
-| `CORS_ORIGINS`          | Backend  | Comma-separated, exact frontend origins allowed to call the API.        |
+| `AUTH_COOKIE_SAMESITE`  | Backend  | Session cookie policy; use `none` for the cross-site production setup.   |
+| `CORS_ORIGINS`          | Backend  | Extra comma-separated, exact frontend origins allowed to call the API.  |
 
 Keep `.env` and `.env.local` files private. Do not commit real credentials or
 secrets. In deployment, configure these variables in the frontend and backend
-hosting providers, use HTTPS, set the production frontend origin in
-`CORS_ORIGINS`, and keep `AUTH_COOKIE_SECURE=true`.
+hosting providers, use HTTPS, set `AUTH_COOKIE_SAMESITE=none`, and keep
+`AUTH_COOKIE_SECURE=true`.
 
 ---
 
