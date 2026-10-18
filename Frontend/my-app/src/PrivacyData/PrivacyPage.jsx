@@ -153,7 +153,7 @@ export default function PrivacyPage() {
               <article><strong>Model files</strong><p>WebLLM and the browser cache downloaded model assets so they can be reused. They may take substantial storage and can be removed through your browser’s site data controls.</p></article>
               <article><strong>Operations dashboard</strong><p>The Models page saves model name, learning mode, timestamps, success or failure, latency, token counts, output length, and generation settings in this browser’s localStorage. It does not save question or answer text. Use “Clear local log” on Models to remove this record.</p></article>
               <article><strong>Theme preference</strong><p>Your light or dark theme choice is stored in this browser’s localStorage.</p></article>
-              <article><strong>Current conversation</strong><p>Messages are held in page memory while the page is open. The app does not persist them; refreshing or closing the page clears them.</p></article>
+              <article><strong>Current conversation</strong><p>The active conversation is saved in this browser’s IndexedDB so it can be restored after a refresh or when you return. Use “Clear conversation” above the chat to delete it from this device. It is not sent to EasyLearn’s backend for storage, and saved earlier turns are not included in later model requests. Anyone with access to this browser profile or the running page may be able to read it, and browser settings can remove site data.</p></article>
               <article><strong>Saved notes in your Drive</strong><p>When you choose “Save to Drive,” EasyLearn sends that question, answer, title, learning mode, model label, and save date directly from your browser to Google Drive as a Markdown file. EasyLearn’s backend does not receive or store the note. Google stores it in your Drive under the EasyLearn folder.</p></article>
             </div>
           </section>
@@ -163,7 +163,7 @@ export default function PrivacyPage() {
             <h2>How your data is protected—and the limits</h2>
             <p>
               Local inference keeps the question out of the model API request
-              path, and browser origin controls keep this site’s localStorage
+              path, and browser origin controls keep this site’s storage
               separate from other sites. The session cookie is HttpOnly so
               ordinary page JavaScript cannot read it. In production, serve
               the app and API over HTTPS and configure the cookie as Secure.

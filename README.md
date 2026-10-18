@@ -145,14 +145,18 @@ hosting providers, use HTTPS, set the production frontend origin in
 
 ## Privacy and data
 
-- Without web search, questions and answers are held in page memory and
-  processed by the local model; they are not sent to EasyLearn’s backend for
-  inference. When web search is enabled, your question and relevant source
+- Without web search, questions and answers are processed by the local model;
+  they are not sent to EasyLearn’s backend for inference. The active transcript
+  is saved locally in this browser’s IndexedDB. When web search is enabled,
+  your question and relevant source
   content are used to inform the answer. EasyLearn does not store the question
   or retrieved content; search providers and source websites receive requests
   under their own privacy policies.
 - The app keeps theme preference and model-usage metadata in browser
-  `localStorage`; this metadata does not include question or answer text.
+  `localStorage`; this metadata does not include question or answer text. The
+  active conversation is saved in browser `IndexedDB` so it can be restored
+  after a refresh. The saved copy is on this device and can be removed with
+  **Clear conversation** in the chat.
 - Google receives sign-in and Drive requests. A sign-in credential is sent to
   the backend for verification. A lesson is sent to Drive only after the
   learner chooses **Save to Drive**; Library requests read EasyLearn notes

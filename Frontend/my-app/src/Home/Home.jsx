@@ -12,6 +12,11 @@ import "./Home.css";
 import PrivacyPage from "../PrivacyData/PrivacyPage.jsx";
 import DocumentationPage from "../Documentation/DocumentationPage.jsx";
 import LibraryDrawer from "../Library/LibraryDrawer.jsx";
+import {
+  clearConversation as clearStoredConversation,
+  readConversation,
+  writeConversation,
+} from "./conversationStorage.js";
 
 const LEVELS = [
   { id: "Short", title: "Quick", detail: "The core idea in a few sentences" },
@@ -774,6 +779,8 @@ function Home() {
   const [model, setModel] = useState("llama-1b");
   const [level, setLevel] = useState("Short");
   const [messages, setMessages] = useState([]);
+  const [conversationStorageReady, setConversationStorageReady] = useState(false);
+  const [conversationStorageStatus, setConversationStorageStatus] = useState("Restoring conversation…");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copiedIndex, setCopiedIndex] = useState(null);
@@ -818,6 +825,70 @@ function Home() {
   const profileMenuRef = useRef(null);
   const googleButtonRef = useRef(null);
   const libraryTriggerRef = useRef(null);
+
+  useEffect(() => {
+    let isCurrent = true;
+    readConversation()
+      .then((stored) => {
+        if (!isCurrent) return;
+        const restoredMessages = Array.isArray(stored?.messages)
+          ? stored.messages.filter((message) =>
+              (message?.sender === "user" && typeof message?.text === "string")
+              || (message?.sender === "bot"
+                && message?.text !== null
+                && (typeof message?.text === "string"
+                  || (typeof message?.text === "object" && !Array.isArray(message.text)))),
+            )
+          : [];
+        setMessages(restoredMessages);
+        setConversationStorageStatus("Saved on this device");
+      })
+      .catch(() => {
+        if (!isCurrent) return;
+        setConversationStorageStatus("Local saving is unavailable");
+      })
+      .finally(() => {
+        if (isCurrent) setConversationStorageReady(true);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!conversationStorageReady) return undefined;
+    let isCurrent = true;
+    setConversationStorageStatus("Saving on this device…");
+    const save = messages.length
+      ? writeConversation(messages)
+      : clearStoredConversation();
+    save.then(
+      () => {
+        if (isCurrent) setConversationStorageStatus("Saved on this device");
+      },
+      () => {
+        if (isCurrent) setConversationStorageStatus("Could not save on this device");
+      },
+    );
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [messages, conversationStorageReady]);
+
+  const handleClearConversation = async () => {
+    if (loading) return;
+    setMessages([]);
+    setError("");
+    setDriveSaveError(null);
+    try {
+      await clearStoredConversation();
+      setConversationStorageStatus("Conversation cleared from this device");
+    } catch {
+      setConversationStorageStatus("Could not clear local conversation");
+    }
+  };
 
   const refreshStorageEstimate = useCallback(() => {
     navigator.storage
@@ -928,11 +999,14 @@ function Home() {
     }
   });
 
-  const openLibrary = async () => {
+  const openLibrary = () => {
     setLibraryOpen(true);
     setLibraryError("");
-    if (!userProfile) return;
+  };
 
+  const mountDrive = async () => {
+    if (!userProfile) return;
+    setLibraryError("");
     setLibraryLoading(true);
     try {
       let accessToken = driveAccessToken;
@@ -1218,7 +1292,7 @@ function Home() {
   const handleSubmit = async (event) => {
     event?.preventDefault();
     const userQuery = query.trim();
-    if (!userQuery || loading) return;
+    if (!userQuery || loading || !conversationStorageReady) return;
     const requestedLevel = level;
 
     setError("");
@@ -1464,6 +1538,28 @@ function Home() {
     setComposerCompact(element.scrollTop > 24 && distanceFromLatest > 80);
   };
 
+  const recentTopics = messages
+    .map((message, messageIndex) => ({ message, messageIndex }))
+    .filter(({ message }) => message.sender === "user")
+    .slice(-12)
+    .reverse()
+    .map(({ message, messageIndex }) => ({
+      title: message.text.replace(/\s+/g, " ").trim(),
+      messageIndex,
+    }));
+
+  const openRecentTopic = (messageIndex) => {
+    setLibraryOpen(false);
+    setActivePage("learn");
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document
+          .getElementById(`conversation-message-${messageIndex}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  };
+
   return (
     <main className="app-shell" data-theme={theme}>
       <header className="topbar">
@@ -1637,6 +1733,13 @@ function Home() {
                     Ask a question and learn with AI running on your device. No
                     API token needed.
                   </p>
+                  {(!conversationStorageReady
+                    || conversationStorageStatus.includes("unavailable")
+                    || conversationStorageStatus.startsWith("Could not")) && (
+                    <p className="device-note" role="status">
+                      {conversationStorageStatus}
+                    </p>
+                  )}
                 </div>
                 <div className="welcome-visual" aria-hidden="true">
                   <svg
@@ -1788,9 +1891,20 @@ function Home() {
               </div>
             ) : (
               <div className="message-list">
+                <div className="conversation-history-bar">
+                  <span role="status">{conversationStorageStatus}</span>
+                  <button
+                    type="button"
+                    onClick={handleClearConversation}
+                    disabled={loading}
+                  >
+                    Clear conversation
+                  </button>
+                </div>
                 {messages.map((message, index) => (
                   <div
                     className={`message-row ${message.sender}`}
+                    id={`conversation-message-${index}`}
                     key={`${message.sender}-${index}`}
                   >
                     {message.sender === "bot" && (
@@ -1945,7 +2059,7 @@ function Home() {
               />
               <button
                 type="submit"
-                disabled={!query.trim() || loading}
+                disabled={!query.trim() || loading || !conversationStorageReady}
                 aria-label="Send question"
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
@@ -1970,7 +2084,10 @@ function Home() {
         libraryNotes={libraryNotes}
         librarySearch={librarySearch}
         setLibrarySearch={setLibrarySearch}
-        openLibrary={openLibrary}
+        driveMounted={Boolean(driveAccessToken && driveFolderId && driveTokenExpiresAt > Date.now())}
+        recentTopics={recentTopics}
+        openRecentTopic={openRecentTopic}
+        mountDrive={mountDrive}
         openDriveNote={openDriveNote}
         setProfileMenuOpen={setProfileMenuOpen}
         navigateToPage={navigateToPage}

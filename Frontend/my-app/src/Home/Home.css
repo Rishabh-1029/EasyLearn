@@ -53,6 +53,17 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .library-close { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid #dce7e2; border-radius: 50%; background: #fff; color: #64766d; font-size: 23px; line-height: 1; cursor: pointer; }
 .library-close:hover { border-color: #9bcab8; color: #26775f; }
 .library-intro { margin: 8px 0 20px; color: #7b8982; font-size: 12px; line-height: 1.6; }
+.library-sections { display: grid; min-height: 0; flex: 1; align-content: start; gap: 22px; overflow-y: auto; padding-right: 3px; }
+.library-section { display: grid; align-content: start; gap: 10px; }
+.library-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.library-section-heading .eyebrow { color: #72877b; font-size: 9px; letter-spacing: 1px; }
+.library-section-heading small { color: #98a49c; font-size: 10px; }
+.library-mount-button { padding: 6px 9px; border: 1px solid #cfe2d6; border-radius: 8px; background: #f3faf5; color: #34765e; font-size: 10px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.library-mount-button:hover:not(:disabled) { border-color: #8fc9b4; background: #eaf6ef; }
+.library-mount-button:disabled { opacity: .6; cursor: wait; }
+.library-local-empty, .library-drive-prompt { padding: 13px; border: 1px solid #e3ebe6; border-radius: 11px; background: #fff; color: #7d8b83; font-size: 11px; line-height: 1.6; }
+.library-drive-prompt p { margin: 0; }
+.library-drive-prompt .library-action-button { margin-top: 11px; }
 .library-content { display: flex; min-height: 0; flex: 1; flex-direction: column; }
 .library-search { display: flex; flex: 0 0 auto; align-items: center; gap: 9px; margin-bottom: 14px; padding: 0 11px; border: 1px solid #e0e9e3; border-radius: 10px; background: #fff; color: #809088; }
 .library-search:focus-within { border-color: #83bba0; box-shadow: 0 0 0 3px rgb(80 161 125 / 10%); }
@@ -192,6 +203,10 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .suggestions button:hover { border-color: #8fc9b4; background: #f4fbf7; transform: translateY(-1px); }
 
 .message-list { max-width: 800px; margin: 0 auto; padding: 38px 0 24px; }
+.conversation-history-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 20px 44px; color: #82908a; font-size: 11px; }
+.conversation-history-bar button { padding: 6px 10px; border: 1px solid #dce7e1; border-radius: 8px; color: #526c60; background: #fff; font: inherit; cursor: pointer; }
+.conversation-history-bar button:hover:not(:disabled) { border-color: #8fc9b4; color: #287d68; }
+.conversation-history-bar button:disabled { opacity: .55; cursor: not-allowed; }
 .message-row { display: flex; gap: 12px; margin-bottom: 28px; align-items: flex-start; }
 .message-row.user { justify-content: flex-end; }
 .message-content { max-width: min(100%, 700px); min-width: 0; }
@@ -698,6 +713,12 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .app-shell[data-theme="dark"] .library-intro,
 .app-shell[data-theme="dark"] .library-note-copy small,
 .app-shell[data-theme="dark"] .library-drawer-footer { color: #9aaba0; }
+.app-shell[data-theme="dark"] .library-section-heading .eyebrow { color: #a1b5a8; }
+.app-shell[data-theme="dark"] .library-section-heading small { color: #84978a; }
+.app-shell[data-theme="dark"] .library-mount-button { border-color: #365445; background: #203329; color: #9bdbbb; }
+.app-shell[data-theme="dark"] .library-mount-button:hover:not(:disabled) { border-color: #68b891; background: #294334; }
+.app-shell[data-theme="dark"] .library-local-empty,
+.app-shell[data-theme="dark"] .library-drive-prompt { border-color: #2c3d33; background: #18221c; color: #aab9af; }
 .app-shell[data-theme="dark"] .note-reader-card { border-color: #2c3d33; background: #18221c; box-shadow: 0 12px 36px rgb(0 0 0 / 16%); }
 .app-shell[data-theme="dark"] .note-reader-heading { border-color: #2d4035; }
 .app-shell[data-theme="dark"] .note-reader-heading h1,
@@ -787,6 +808,9 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .app-shell[data-theme="dark"] .suggestions button { border-color: #34463c; background: #1a251f; color: #cfddd4; }
 .app-shell[data-theme="dark"] .suggestions button:hover { border-color: #5b9f7f; background: #203329; }
 .app-shell[data-theme="dark"] .user-bubble { background: #243b2f; color: #dcebe1; }
+.app-shell[data-theme="dark"] .conversation-history-bar { color: #9aaba0; }
+.app-shell[data-theme="dark"] .conversation-history-bar button { border-color: #34483b; color: #c2d1c7; background: #18221c; }
+.app-shell[data-theme="dark"] .conversation-history-bar button:hover:not(:disabled) { border-color: #68b891; color: #9bdbbb; }
 .app-shell[data-theme="dark"] .assistant-avatar { background: linear-gradient(145deg, #42a981, #246c58); color: #f5fff9; }
 .app-shell[data-theme="dark"] .thinking-indicator { border-color: #344b3d; background: linear-gradient(125deg, #1b2921 10%, #203529 100%); color: #c4d6ca; box-shadow: 0 8px 22px rgb(0 0 0 / 14%); }
 .app-shell[data-theme="dark"] .thinking-orb { border-color: #3d6049; background: #263c2e; }
