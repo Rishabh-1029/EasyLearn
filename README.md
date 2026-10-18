@@ -1,5 +1,9 @@
 # EasyLearn
 
+<p align="center">
+  <img src="Frontend/my-app/src/assets/easylearn-logo.svg" alt="EasyLearn" width="280" />
+</p>
+
 EasyLearn is a browser-based learning app that explains a concept at three
 depths. It runs a small language model on the learner’s device, and can save a
 lesson as a Markdown file to the learner’s Google Drive.
@@ -117,11 +121,3 @@ Backend/                 FastAPI authentication/session service
 Frontend/my-app/         React + Vite application
 Frontend/my-app/src/Home/ Learning UI, local model runtime, and worker
 ```
-
-## Screenshots
-
-![EasyLearn home page](Frontend/my-app/src/assets/Home_Page.png)
-
-![Example lesson response](Frontend/my-app/src/assets/Output_Example_1.png)
-
-![Available local models](Frontend/my-app/src/assets/Models.png)

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 58" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">EasyLearn</title>
+  <defs>
+    <linearGradient id="mark-bg" x1="4" y1="4" x2="44" y2="46" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#39A987" />
+      <stop offset="1" stop-color="#18715F" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="5" width="48" height="48" rx="16" fill="url(#mark-bg)" />
+  <g transform="translate(6 9)">
+    <path d="M8 12.7c4.4-.9 8.4.1 12 3.2 3.6-3.1 7.6-4.1 12-3.2v13.1c-4.4-.7-8.4.2-12 2.9-3.6-2.7-7.6-3.6-12-2.9V12.7Z" fill="#F5FFF9" fill-opacity=".16" stroke="#F5FFF9" stroke-width="2.1" stroke-linejoin="round" />
+    <path d="M20 15.9v12.5M11.5 17.1c2.2.1 4.1.8 6 2M28.5 17.1c-2.2.1-4.1.8-6 2" stroke="#F5FFF9" stroke-width="1.8" stroke-linecap="round" />
+    <path d="m28.5 7 .9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9.9-2.4Z" fill="#C5F0D7" />
+  </g>
+  <text x="62" y="40" fill="#183B37" font-family="Manrope, Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="-1.5">easy<tspan fill="#258C73">learn</tspan></text>
+</svg>
