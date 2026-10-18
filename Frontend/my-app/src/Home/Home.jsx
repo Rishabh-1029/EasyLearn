@@ -2676,6 +2676,9 @@ function Home() {
           </div>
         </section>
       )}
+      <footer className="site-footer">
+        Copyright (c) 2026 EasyLearn - Creating, Learning and Evolving
+      </footer>
     </main>
   );
 }

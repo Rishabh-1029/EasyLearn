@@ -19,6 +19,15 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 }
 
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.site-footer {
+  flex: 0 0 auto;
+  padding: 14px 20px;
+  color: #819087;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+.app-shell[data-theme="dark"] .site-footer { color: #9eafa4; }
 .topbar {
   position: sticky;
   top: 0;
