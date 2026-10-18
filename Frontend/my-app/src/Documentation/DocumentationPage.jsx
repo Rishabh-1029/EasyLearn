@@ -5,7 +5,7 @@ const QUERY_FLOW_STEPS = [
     id: "input",
     title: "Question + choices",
     label: "01",
-    detail: "The browser keeps the current question and uses your selected learning depth and model choice to configure the request. Earlier turns are not added.",
+    detail: "The browser saves the conversation transcript in local IndexedDB so it can be restored after a refresh. For each answer, only the current question and your selected learning depth and model choice configure the model request; earlier turns are not added.",
   },
   {
     id: "search",
@@ -259,6 +259,8 @@ export default function DocumentationPage() {
               Every request uses one system prompt selected directly from the
               chosen mode. The previous conversation is not included, so each
               question starts with the same clean prompt-and-question structure.
+              The transcript is still saved locally for recovery and can be
+              revisited from Library under Recent topics.
             </p>
             <div className="docs-mode-grid">
               <article className="docs-mode-card quick">
@@ -448,9 +450,11 @@ export default function DocumentationPage() {
                 <p>
                   After the model files are available, inference runs locally;
                   questions only go to the Backend API when you enable web
-                  search. Conversation messages live in page state and are
-                  not added to the LLM operations log. That log stores
-                  operational metadata in this browser and can be cleared from
+                  search. The active transcript is saved in this browser’s
+                  IndexedDB and is not added to the LLM operations log. Open
+                  Library and choose a Recent topic to jump back to it, or use
+                  Clear conversation to remove the local transcript. The
+                  operations log stores metadata and can be cleared from
                   Models. If you choose Save to Drive, only that selected
                   question and answer are uploaded directly to your Google
                   Drive as a Markdown note.
@@ -461,9 +465,10 @@ export default function DocumentationPage() {
                 <p>
                   The first model download needs internet access. EasyLearn uses
                   WebLLM’s configured model assets, and the page also loads its
-                  web fonts online. Sign-in is optional; the Library reads your
-                  saved notes from Drive, and Save to Drive uploads a selected
-                  lesson. Search requests go to
+                  web fonts online. Sign-in is optional; Recent topics in the
+                  Library work without Drive. Sign in, then choose Mount Google
+                  Drive in the Library to load saved notes. Save to Drive
+                  uploads a selected lesson. Search requests go to
                   EasyLearn, external search providers, and selected websites
                   only when search is enabled. Local inference does
                   not call a hosted LLM API; note content is sent to Drive only

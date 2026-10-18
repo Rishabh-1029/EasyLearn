@@ -160,7 +160,8 @@ hosting providers, use HTTPS, set the production frontend origin in
 - Google receives sign-in and Drive requests. A sign-in credential is sent to
   the backend for verification. A lesson is sent to Drive only after the
   learner chooses **Save to Drive**; Library requests read EasyLearn notes
-  from the app folder.
+  from the app folder. Library’s Recent topics are available locally without
+  Drive; sign in and choose **Mount Google Drive** to load saved notes.
 - Model files, Google sign-in assets, and fonts are fetched from their
   respective providers. Those requests can reveal ordinary connection details
   such as IP address and requested resources.

@@ -8,15 +8,11 @@ import {
 } from "../Models/localModelRuntime.js";
 import { MODELS } from "../Models/modelConfig.js";
 import ModelsPage from "../Models/ModelsPage.jsx";
+import useConversationHistory from "../ConversationHistory/useConversationHistory.js";
 import "./Home.css";
 import PrivacyPage from "../PrivacyData/PrivacyPage.jsx";
 import DocumentationPage from "../Documentation/DocumentationPage.jsx";
 import LibraryDrawer from "../Library/LibraryDrawer.jsx";
-import {
-  clearConversation as clearStoredConversation,
-  readConversation,
-  writeConversation,
-} from "./conversationStorage.js";
 
 const LEVELS = [
   { id: "Short", title: "Quick", detail: "The core idea in a few sentences" },
@@ -778,9 +774,13 @@ function Home() {
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [model, setModel] = useState("llama-1b");
   const [level, setLevel] = useState("Short");
-  const [messages, setMessages] = useState([]);
-  const [conversationStorageReady, setConversationStorageReady] = useState(false);
-  const [conversationStorageStatus, setConversationStorageStatus] = useState("Restoring conversation…");
+  const {
+    messages,
+    setMessages,
+    ready: conversationStorageReady,
+    status: conversationStorageStatus,
+    clearConversation,
+  } = useConversationHistory();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copiedIndex, setCopiedIndex] = useState(null);
@@ -826,68 +826,11 @@ function Home() {
   const googleButtonRef = useRef(null);
   const libraryTriggerRef = useRef(null);
 
-  useEffect(() => {
-    let isCurrent = true;
-    readConversation()
-      .then((stored) => {
-        if (!isCurrent) return;
-        const restoredMessages = Array.isArray(stored?.messages)
-          ? stored.messages.filter((message) =>
-              (message?.sender === "user" && typeof message?.text === "string")
-              || (message?.sender === "bot"
-                && message?.text !== null
-                && (typeof message?.text === "string"
-                  || (typeof message?.text === "object" && !Array.isArray(message.text)))),
-            )
-          : [];
-        setMessages(restoredMessages);
-        setConversationStorageStatus("Saved on this device");
-      })
-      .catch(() => {
-        if (!isCurrent) return;
-        setConversationStorageStatus("Local saving is unavailable");
-      })
-      .finally(() => {
-        if (isCurrent) setConversationStorageReady(true);
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!conversationStorageReady) return undefined;
-    let isCurrent = true;
-    setConversationStorageStatus("Saving on this device…");
-    const save = messages.length
-      ? writeConversation(messages)
-      : clearStoredConversation();
-    save.then(
-      () => {
-        if (isCurrent) setConversationStorageStatus("Saved on this device");
-      },
-      () => {
-        if (isCurrent) setConversationStorageStatus("Could not save on this device");
-      },
-    );
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [messages, conversationStorageReady]);
-
   const handleClearConversation = async () => {
     if (loading) return;
-    setMessages([]);
     setError("");
     setDriveSaveError(null);
-    try {
-      await clearStoredConversation();
-      setConversationStorageStatus("Conversation cleared from this device");
-    } catch {
-      setConversationStorageStatus("Could not clear local conversation");
-    }
+    await clearConversation();
   };
 
   const refreshStorageEstimate = useCallback(() => {
