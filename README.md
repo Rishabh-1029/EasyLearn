@@ -170,11 +170,16 @@ For the in-app details, open **Privacy and Data** from the profile menu.
 ## Project structure
 
 ```text
-Backend/main.py          Uvicorn compatibility entry point
-Backend/app/api/         FastAPI authentication and search routes
-Backend/app/auth/        Signed session-cookie helpers
-Backend/app/services/    Web search, extraction, and ranking
-Backend/app/config.py    Backend environment settings
-Frontend/my-app/         React + Vite application
-Frontend/my-app/src/Home/ Learning UI, local model runtime, and worker
+Backend/main.py                    Uvicorn compatibility entry point
+Backend/app/main.py                FastAPI app setup
+Backend/app/api/                   Authentication and search routes
+Backend/app/auth/                  Signed session-cookie helpers
+Backend/app/services/              Web search, extraction, and ranking
+Backend/app/config.py              Backend environment settings
+Frontend/my-app/src/Home/          Main learning experience and shared styles
+Frontend/my-app/src/Models/        Model configuration, runtime, worker, and UI
+Frontend/my-app/src/Library/       Google Drive notes drawer and helpers
+Frontend/my-app/src/Documentation/ Documentation page and query flow
+Frontend/my-app/src/PrivacyData/   Privacy and data page
+Frontend/my-app/src/assets/        Shared visual assets
 ```
