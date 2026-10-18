@@ -8,11 +8,37 @@ EasyLearn is a browser-based learning app that explains a concept at three
 depths. It runs a small language model on the learner’s device, and can save a
 lesson as a Markdown file to the learner’s Google Drive.
 
+---
+
+## Core philosophy
+
+Learning should be clear, adaptable, and led by the learner. EasyLearn runs
+answer generation on the learner’s device by default, lets them choose how
+deeply to explore a topic, and makes live web search an optional way to bring
+current sources into an answer. A lesson is shared with Google Drive only when
+the learner chooses to save it.
+
+---
+
+## Tech stack
+
+| Area               | Technologies                                            |
+| ------------------ | ------------------------------------------------------- |
+| Languages          | Python, JavaScript                                      |
+| Frontend           | React                                                   |
+| Local AI           | WebLLM, Web Workers, WebGPU                             |
+| Backend and search | FastAPI, Pydantic, Uvicorn, `ddgs`, HTTPX, Trafilatura  |
+| Google services    | Google Identity Services, Google Auth, Google Drive API |
+
+---
+
 ## Learning modes
 
 - **Quick** gives the core idea in a few sentences.
 - **Guided** builds a clear explanation step by step.
 - **Deep dive** adds more detail, an example, and a self-check.
+
+---
 
 ## How it works
 
@@ -22,12 +48,15 @@ Worker and uses WebGPU for local generation. The available models are Llama 3.2
 the first time it is used and is cached for later sessions. WebGPU support and
 generation speed depend on the browser and device.
 
-The FastAPI backend handles Google sign-in and the EasyLearn session only. It
-does not receive learning prompts or answers for inference, and it does not
-store user profiles or learning history. When a learner chooses **Save to
-Drive**, the browser requests Google Drive access with the `drive.file` scope
-and uploads that lesson as a Markdown file to an `EasyLearn` folder. The Drive
-access token stays in browser memory.
+The FastAPI backend handles Google sign-in and the EasyLearn session. When a
+learner enables **Web search**, EasyLearn finds relevant current sources and
+uses them to inform a locally generated answer. When a learner chooses
+**Save to Drive**, the
+browser requests Google Drive access with the `drive.file` scope and uploads
+that lesson as a Markdown file to an `EasyLearn` folder. The Drive access token
+stays in browser memory.
+
+---
 
 ## Run locally
 
@@ -79,28 +108,45 @@ Open the local URL printed by Vite (usually `http://localhost:5173`). Choose a
 model, wait for its first download, then ask a question. Google sign-in is
 optional; sign in and authorize Drive when you want to save a lesson there.
 
+---
+
+## Live Web Search
+
+Web search is optional and off by default. Turn on **Web search** in the
+question composer when you want recent sources to inform an answer. EasyLearn
+finds relevant passages and links the sources in its response; your selected
+model generates the explanation in your browser. Search quality depends on the
+sources available for your question.
+
+---
+
 ## Environment variables
 
-| Variable | Where | Purpose |
-| --- | --- | --- |
-| `VITE_API_BASE_URL` | Frontend | Backend base URL; local default is `http://localhost:8000`. |
-| `VITE_GOOGLE_CLIENT_ID` | Frontend | Google OAuth Web client ID used by Google Identity Services. |
-| `GOOGLE_CLIENT_ID` | Backend | The same client ID, used to verify sign-in credentials. |
-| `AUTH_SESSION_SECRET` | Backend | Random secret of at least 32 characters for signing the session cookie. |
-| `AUTH_COOKIE_SECURE` | Backend | `true` for HTTPS; use `false` only for local HTTP development. |
-| `AUTH_COOKIE_SAMESITE` | Backend | Session cookie policy; default is `lax`. |
-| `CORS_ORIGINS` | Backend | Comma-separated, exact frontend origins allowed to call the API. |
+| Variable                | Where    | Purpose                                                                 |
+| ----------------------- | -------- | ----------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`     | Frontend | Backend base URL; local default is `http://localhost:8000`.             |
+| `VITE_GOOGLE_CLIENT_ID` | Frontend | Google OAuth Web client ID used by Google Identity Services.            |
+| `GOOGLE_CLIENT_ID`      | Backend  | The same client ID, used to verify sign-in credentials.                 |
+| `AUTH_SESSION_SECRET`   | Backend  | Random secret of at least 32 characters for signing the session cookie. |
+| `AUTH_COOKIE_SECURE`    | Backend  | `true` for HTTPS; use `false` only for local HTTP development.          |
+| `AUTH_COOKIE_SAMESITE`  | Backend  | Session cookie policy; default is `lax`.                                |
+| `CORS_ORIGINS`          | Backend  | Comma-separated, exact frontend origins allowed to call the API.        |
 
 Keep `.env` and `.env.local` files private. Do not commit real credentials or
 secrets. In deployment, configure these variables in the frontend and backend
 hosting providers, use HTTPS, set the production frontend origin in
 `CORS_ORIGINS`, and keep `AUTH_COOKIE_SECURE=true`.
 
+---
+
 ## Privacy and data
 
-- Questions and answers are held in page memory and processed by the local
-  model. They are not sent to EasyLearn’s backend or a hosted model API for
-  inference.
+- Without web search, questions and answers are held in page memory and
+  processed by the local model; they are not sent to EasyLearn’s backend for
+  inference. When web search is enabled, your question and relevant source
+  content are used to inform the answer. EasyLearn does not store the question
+  or retrieved content; search providers and source websites receive requests
+  under their own privacy policies.
 - The app keeps theme preference and model-usage metadata in browser
   `localStorage`; this metadata does not include question or answer text.
 - Google receives sign-in and Drive requests. A sign-in credential is sent to
@@ -113,6 +159,8 @@ hosting providers, use HTTPS, set the production frontend origin in
   code. Hosting providers may keep their own request logs.
 
 For the in-app details, open **Privacy and Data** from the profile menu.
+
+---
 
 ## Project structure
 
