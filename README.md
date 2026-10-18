@@ -170,7 +170,11 @@ For the in-app details, open **Privacy and Data** from the profile menu.
 ## Project structure
 
 ```text
-Backend/                 FastAPI authentication/session service
+Backend/main.py          Uvicorn compatibility entry point
+Backend/app/api/         FastAPI authentication and search routes
+Backend/app/auth/        Signed session-cookie helpers
+Backend/app/services/    Web search, extraction, and ranking
+Backend/app/config.py    Backend environment settings
 Frontend/my-app/         React + Vite application
 Frontend/my-app/src/Home/ Learning UI, local model runtime, and worker
 ```
