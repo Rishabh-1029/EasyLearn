@@ -210,6 +210,53 @@ async function findOrCreateDriveFolder(accessToken) {
   return created.id;
 }
 
+async function listDriveNotes(accessToken, folderId) {
+  const files = [];
+  let pageToken = "";
+  do {
+    const params = new URLSearchParams({
+      q: `'${folderId}' in parents and trashed = false`,
+      pageSize: "100",
+      orderBy: "modifiedTime desc",
+      fields: "nextPageToken,files(id,name,mimeType,modifiedTime,webViewLink)",
+    });
+    if (pageToken) params.set("pageToken", pageToken);
+    const result = await driveRequest(`${DRIVE_API_URL}?${params}`, accessToken);
+    files.push(...(result.files || []));
+    pageToken = result.nextPageToken || "";
+  } while (pageToken);
+  return files.filter((file) => file.name?.toLowerCase().endsWith(".md"));
+}
+
+async function downloadDriveNote(accessToken, fileId) {
+  const response = await fetch(`${DRIVE_API_URL}/${encodeURIComponent(fileId)}?alt=media`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}));
+    const error = new Error(result.error?.message || `Could not open this note (${response.status}).`);
+    error.status = response.status;
+    throw error;
+  }
+  return response.text();
+}
+
+function groupLibraryNotes(notes) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const groups = [
+    { title: "Today", notes: [] },
+    { title: "This week", notes: [] },
+    { title: "Earlier", notes: [] },
+  ];
+  for (const note of notes) {
+    const date = new Date(note.modifiedTime || 0);
+    const daysAgo = Number.isNaN(date.getTime()) ? Infinity : Math.floor((today - new Date(date.getFullYear(), date.getMonth(), date.getDate())) / 86400000);
+    groups[daysAgo === 0 ? 0 : daysAgo < 7 ? 1 : 2].notes.push(note);
+  }
+  return groups.filter((group) => group.notes.length);
+}
+
 function createLessonMarkdown(question, message) {
   const answer = typeof message.text === "string" ? { summary: message.text } : (message.text || {});
   const modelLabel = MODELS[message.model]?.label || message.model || "EasyLearn local model";
@@ -843,7 +890,7 @@ function PrivacyPage() {
               <div className="privacy-flow-network">
                 <div className="privacy-flow-title"><span className="privacy-flow-dot network" /> Network requests</div>
                 <p>Site &amp; fonts · model files · sign-in · optional web search · Drive</p>
-                <small>With web search enabled, your question is sent for retrieval and answer generation stays local. Drive setup finds or creates an “EasyLearn” folder; saving sends the lesson to Google.</small>
+                <small>With web search enabled, your question is sent for retrieval and answer generation stays local. The Library reads EasyLearn notes from Google Drive; saving sends a lesson there.</small>
               </div>
             </div>
           </section>
@@ -874,7 +921,7 @@ function PrivacyPage() {
             <div className="privacy-data-list">
               <article><strong>Website and fonts</strong><p>Your browser requests the app files from the site host. The stylesheet also loads fonts from Google Fonts. Those hosts receive ordinary connection details such as your IP address, browser, and requested files.</p></article>
               <article><strong>Model downloads</strong><p>When a model is not cached, WebLLM downloads its model files from the asset locations configured by WebLLM. Those requests reveal connection metadata and which assets are requested, but the model download does not include your question.</p></article>
-              <article><strong>Google sign-in and Drive connection</strong><p>Google Identity Services loads from Google. If you are not signed in, choosing to save a note prompts sign-in; the identity credential goes to EasyLearn’s backend for verification and establishes a signed session cookie. Drive authorization then obtains a short-lived token with the <code>drive.file</code> scope and calls Google Drive directly to find or create the app folder and upload the note. EasyLearn does not store that Drive token. If Google provides a profile image, the browser also loads it directly from Google.</p></article>
+              <article><strong>Google sign-in and Drive connection</strong><p>Google Identity Services loads from Google. If you are not signed in, the Library offers a sign-in option, while saving a note opens the profile sign-in flow; the identity credential goes to EasyLearn’s backend for verification and establishes a signed session cookie. Drive authorization then obtains a short-lived token with the <code>drive.file</code> scope and calls Google Drive directly to find or create the app folder, list its EasyLearn notes, open a selected note, or upload a note you chose to save. EasyLearn does not store that Drive token. If Google provides a profile image, the browser also loads it directly from Google.</p></article>
               <article><strong>Optional live web search</strong><p>When Search the web is enabled, EasyLearn sends your question to its backend. The backend uses the <code>ddgs</code> library with its DuckDuckGo backend, fetches selected result pages, and returns up to three relevant excerpts. The browser sends those excerpts to the local model for generation. EasyLearn does not persist the query or excerpts; DuckDuckGo and fetched sites receive requests under their own policies.</p></article>
               <article><strong>Inference stays on your device</strong><p>The Learn page runs generation in your browser. EasyLearn does not send your question or retrieved excerpts to a hosted model for generation.</p></article>
               <article><strong>Hosting and infrastructure</strong><p>Web hosting, backend hosting, and network providers may receive connection metadata when your browser contacts them. Their server logs and retention depend on the hosting configuration and provider policies.</p></article>
@@ -887,8 +934,8 @@ function PrivacyPage() {
             <h2>What sign-in does and does not do</h2>
             <p>
               You can use the learning app without signing in. If you are not
-              already signed in when you choose “Save to Drive,” EasyLearn
-              prompts you to sign in. Google sends an identity credential to
+              signed in, saving a note opens the profile sign-in flow and the
+              Library offers a sign-in option. Google sends an identity credential to
               the EasyLearn backend, which verifies it and issues a signed,
               HttpOnly session cookie with the account ID, name, email,
               profile image URL, and expiry. The cookie is signed, not
@@ -897,16 +944,18 @@ function PrivacyPage() {
               learning history in a database.
             </p>
             <p>
-              Drive access is a separate Google permission requested only when
-              you save a note, using the narrow <code>drive.file</code> scope.
+              Drive access is a separate Google permission requested when you
+              save a note or open the Library, using the narrow <code>drive.file</code> scope.
               The app then searches for
               or creates an “EasyLearn” folder. Use the same Google account for
               Drive that you used to sign in. The short-lived access token and
               folder ID stay in browser memory; EasyLearn does not save them.
               After a reload or token expiry, authorize Drive again. With this
-              scope the app can find files it created, but cannot search every
-              folder in Drive. A manually created “EasyLearn” folder may not be
-              visible, so the app may create its own folder with that name.
+              scope the app can access files created or opened with EasyLearn
+              and lists the Markdown notes in its app folder. It cannot search
+              every folder in Drive. A manually created
+              “EasyLearn” folder may not be visible, so the app may create its
+              own folder with that name.
             </p>
           </section>
 
@@ -1339,8 +1388,9 @@ function DocumentationPage() {
                 <p>
                   The first model download needs internet access. EasyLearn uses
                   WebLLM’s configured model assets, and the page also loads its
-                  web fonts online. Sign-in is optional; Drive authorization
-                  and upload happen from Save to Drive. Search requests go to
+                  web fonts online. Sign-in is optional; the Library reads your
+                  saved notes from Drive, and Save to Drive uploads a selected
+                  lesson. Search requests go to
                   EasyLearn, external search providers, and selected websites
                   only when search is enabled. Local inference does
                   not call a hosted LLM API; note content is sent to Drive only
@@ -1392,6 +1442,15 @@ function Home() {
   const [driveFolderId, setDriveFolderId] = useState(null);
   const [driveTokenExpiresAt, setDriveTokenExpiresAt] = useState(0);
   const [driveConnecting, setDriveConnecting] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+  const [libraryNotes, setLibraryNotes] = useState([]);
+  const [librarySearch, setLibrarySearch] = useState("");
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  const [libraryLoaded, setLibraryLoaded] = useState(false);
+  const [libraryError, setLibraryError] = useState("");
+  const [selectedDriveNote, setSelectedDriveNote] = useState(null);
+  const [driveNoteLoading, setDriveNoteLoading] = useState(false);
+  const [driveNoteError, setDriveNoteError] = useState("");
   const [savingMessageIndex, setSavingMessageIndex] = useState(null);
   const [savedMessageIndexes, setSavedMessageIndexes] = useState(() => new Set());
   const [driveSaveError, setDriveSaveError] = useState(null);
@@ -1404,6 +1463,7 @@ function Home() {
   const inputRef = useRef(null);
   const profileMenuRef = useRef(null);
   const googleButtonRef = useRef(null);
+  const libraryTriggerRef = useRef(null);
 
   const refreshStorageEstimate = useCallback(() => {
     navigator.storage
@@ -1504,7 +1564,7 @@ function Home() {
           }
         },
         error_callback: (error) => {
-          const message = error?.type === "popup_closed" ? "Drive authorization was closed. Choose Save to Drive to try again." : "Google Drive authorization could not open. Please try again.";
+          const message = error?.type === "popup_closed" ? "Drive authorization was closed. Open the Library or choose Save to Drive to try again." : "Google Drive authorization could not open. Please try again.";
           finish({ error: message });
         },
       });
@@ -1513,6 +1573,73 @@ function Home() {
       finish({ error: error.message || "Could not start Google Drive authorization." });
     }
   });
+
+  const openLibrary = async () => {
+    setLibraryOpen(true);
+    setLibraryError("");
+    if (!userProfile) return;
+
+    setLibraryLoading(true);
+    try {
+      let accessToken = driveAccessToken;
+      let folderId = driveFolderId;
+      if (!accessToken || !folderId || driveTokenExpiresAt <= Date.now()) {
+        setDriveAccessToken(null);
+        setDriveFolderId(null);
+        setDriveTokenExpiresAt(0);
+        const connection = await connectGoogleDrive();
+        if (connection.error) throw new Error(connection.error);
+        accessToken = connection.accessToken;
+        folderId = connection.folderId;
+      }
+      const notes = await listDriveNotes(accessToken, folderId);
+      setLibraryNotes(notes);
+      setLibraryLoaded(true);
+    } catch (error) {
+      if (error.status === 401) {
+        setDriveAccessToken(null);
+        setDriveFolderId(null);
+        setDriveTokenExpiresAt(0);
+      }
+      setLibraryError(error.message || "Could not load your EasyLearn notes from Drive.");
+    } finally {
+      setLibraryLoading(false);
+    }
+  };
+
+  const openDriveNote = async (note) => {
+    setLibraryOpen(false);
+    setActivePage("note");
+    setSelectedDriveNote({ ...note, content: "" });
+    setDriveNoteLoading(true);
+    setDriveNoteError("");
+    try {
+      let accessToken = driveAccessToken;
+      if (!accessToken || driveTokenExpiresAt <= Date.now()) {
+        setDriveAccessToken(null);
+        setDriveFolderId(null);
+        setDriveTokenExpiresAt(0);
+        const connection = await connectGoogleDrive();
+        if (connection.error) throw new Error(connection.error);
+        accessToken = connection.accessToken;
+      }
+      const content = await downloadDriveNote(accessToken, note.id);
+      setSelectedDriveNote({ ...note, content });
+    } catch (error) {
+      if (error.status === 401) {
+        setDriveAccessToken(null);
+        setDriveFolderId(null);
+        setDriveTokenExpiresAt(0);
+      }
+      setDriveNoteError(error.message || "Could not open this note from Google Drive.");
+    } finally {
+      setDriveNoteLoading(false);
+    }
+  };
+
+  const filteredLibraryNotes = libraryNotes.filter((note) =>
+    note.name.toLowerCase().includes(librarySearch.trim().toLowerCase()),
+  );
 
   useEffect(() => {
     let active = true;
@@ -1603,6 +1730,19 @@ function Home() {
     };
   }, [profileMenuOpen]);
 
+  useEffect(() => {
+    if (!libraryOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setLibraryOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    document.querySelector(".library-close")?.focus();
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      libraryTriggerRef.current?.focus();
+    };
+  }, [libraryOpen]);
+
   const clearInferenceLog = () => {
     setOpsData({
       totals: { ...EMPTY_OPS_DATA.totals },
@@ -1637,6 +1777,8 @@ function Home() {
     setDriveFolderId(null);
     setDriveTokenExpiresAt(0);
     setDriveSaveError(null);
+    setLibraryNotes([]);
+    setLibraryLoaded(false);
     setSavedMessageIndexes(new Set());
     setAuthError("");
     setProfileMenuOpen(false);
@@ -1983,6 +2125,7 @@ function Home() {
         </a>
         <nav className="main-nav" aria-label="Main navigation">
           <button type="button" className={activePage === "learn" ? "active" : ""} onClick={() => navigateToPage("learn")}>Learn</button>
+          <button ref={libraryTriggerRef} type="button" className={libraryOpen ? "active" : ""} onClick={openLibrary}>Library</button>
           <button type="button" className={activePage === "models" ? "active" : ""} onClick={() => navigateToPage("models")}>Models</button>
           <button type="button" className={activePage === "documentation" ? "active" : ""} onClick={() => navigateToPage("documentation")}>
             <span className="nav-docs-full">Documentation</span>
@@ -2425,6 +2568,39 @@ function Home() {
             </p>
           </section>
         </section>
+      ) : activePage === "note" ? (
+        <section className="note-reader-page" aria-labelledby="note-reader-title">
+          <div className="note-reader-topline">
+            <button type="button" className="note-back-button" onClick={openLibrary}>
+              <span aria-hidden="true">←</span> Back to Library
+            </button>
+            <span className="note-reader-date">
+              {selectedDriveNote?.modifiedTime
+                ? new Date(selectedDriveNote.modifiedTime).toLocaleDateString([], { month: "long", day: "numeric", year: "numeric" })
+                : "Saved note"}
+            </span>
+          </div>
+          <article className="note-reader-card">
+            <header className="note-reader-heading">
+              <span className="eyebrow">YOUR EASY LEARN LIBRARY</span>
+              <h1 id="note-reader-title">
+                {selectedDriveNote?.content?.match(/^#\s+(.+)$/m)?.[1]
+                  || selectedDriveNote?.name?.replace(/\s-\s\d{4}-\d{2}-\d{2} .+\.md$/i, "").replace(/\.md$/i, "")
+                  || "Saved lesson"}
+              </h1>
+            </header>
+            {driveNoteLoading ? (
+              <p className="note-reader-status" role="status">Opening your note from Google Drive…</p>
+            ) : driveNoteError ? (
+              <div className="note-reader-error" role="alert">
+                <p>{driveNoteError}</p>
+                <button type="button" onClick={() => openDriveNote(selectedDriveNote)}>Try again</button>
+              </div>
+            ) : (
+              <MarkdownText className="note-reader-markdown">{selectedDriveNote?.content}</MarkdownText>
+            )}
+          </article>
+        </section>
       ) : activePage === "documentation" ? (
         <DocumentationPage />
       ) : (
@@ -2769,6 +2945,83 @@ function Home() {
           </div>
         </section>
       )}
+      <div
+        className={`library-backdrop${libraryOpen ? " is-open" : ""}`}
+        aria-hidden={!libraryOpen}
+        inert={!libraryOpen}
+        onMouseDown={(event) => { if (event.target === event.currentTarget) setLibraryOpen(false); }}
+      >
+        <aside className="library-drawer" role="dialog" aria-modal="true" aria-labelledby="library-title">
+          <div className="library-drawer-heading">
+            <div>
+              <span className="eyebrow">SAVED TO GOOGLE DRIVE</span>
+              <h2 id="library-title">Your library</h2>
+            </div>
+            <button type="button" className="library-close" aria-label="Close library" onClick={() => setLibraryOpen(false)}>×</button>
+          </div>
+          <p className="library-intro">Your EasyLearn notes, ready to pick up again.</p>
+          {libraryLoading ? (
+            <div className="library-state" role="status"><span className="library-spinner" />Loading your notes…</div>
+          ) : !authChecked ? (
+            <div className="library-state" role="status"><span className="library-spinner" />Checking your account…</div>
+          ) : !userProfile ? (
+            <div className="library-state library-empty-state">
+              <span className="library-state-icon" aria-hidden="true">↗</span>
+              <strong>Sign in to see your notes</strong>
+              <p>Connect your Google account to open notes you saved from EasyLearn.</p>
+              <button type="button" className="library-action-button" onClick={() => { setLibraryOpen(false); setProfileMenuOpen(true); }}>Sign in with Google</button>
+            </div>
+          ) : libraryError ? (
+            <div className="library-state library-empty-state" role="alert">
+              <strong>Couldn’t load your notes</strong>
+              <p>{libraryError}</p>
+              <button type="button" className="library-action-button" onClick={openLibrary}>Try again</button>
+            </div>
+          ) : !libraryLoaded ? (
+            <div className="library-state library-empty-state">
+              <strong>Ready to connect your notes</strong>
+              <p>Connect to Google Drive to see the lessons you’ve saved.</p>
+              <button type="button" className="library-action-button" onClick={openLibrary}>Load my notes</button>
+            </div>
+          ) : libraryNotes.length ? (
+            <div className="library-content">
+              <label className="library-search">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 4.2 4.2" /></svg>
+                <input type="search" value={librarySearch} onChange={(event) => setLibrarySearch(event.target.value)} placeholder="Search your notes" aria-label="Search saved notes" />
+              </label>
+              {filteredLibraryNotes.length ? (
+                <div className="library-note-list" aria-label="Saved EasyLearn notes">
+                  {groupLibraryNotes(filteredLibraryNotes).map((group) => (
+                    <section className="library-note-group" key={group.title}>
+                      <h3>{group.title}</h3>
+                      {group.notes.map((note) => (
+                        <button type="button" className="library-note-item" key={note.id} onClick={() => openDriveNote(note)}>
+                          <span className="library-note-icon" aria-hidden="true">▤</span>
+                          <span className="library-note-copy">
+                            <strong>{note.name.replace(/\s-\s\d{4}-\d{2}-\d{2} .+\.md$/i, "").replace(/\.md$/i, "")}</strong>
+                            <small>{note.modifiedTime ? new Date(note.modifiedTime).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) : "Saved note"}</small>
+                          </span>
+                          <span className="library-note-chevron" aria-hidden="true">›</span>
+                        </button>
+                      ))}
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <div className="library-no-results">No notes match “{librarySearch}”.</div>
+              )}
+            </div>
+          ) : (
+            <div className="library-state library-empty-state">
+              <span className="library-state-icon" aria-hidden="true">✦</span>
+              <strong>Your first saved lesson will show up here</strong>
+              <p>Ask a question, then choose <b>Save to Drive</b> to keep the lesson in your library.</p>
+              <button type="button" className="library-action-button" onClick={() => { setLibraryOpen(false); navigateToPage("learn"); }}>Start learning</button>
+            </div>
+          )}
+          <div className="library-drawer-footer">Only EasyLearn notes in your EasyLearn Drive folder appear here.</div>
+        </aside>
+      </div>
       <footer className="site-footer">
         Copyright (c) 2026 EasyLearn - Creating, Learning and Evolving
       </footer>

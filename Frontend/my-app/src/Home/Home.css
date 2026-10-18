@@ -27,6 +27,59 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
   line-height: 1.5;
   text-align: center;
 }
+.note-reader-page { width: min(calc(100% - 40px), 820px); min-height: calc(100dvh - 128px); margin: 0 auto; padding: clamp(28px, 6vh, 64px) 0 54px; }
+.note-reader-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.note-back-button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid #dce7e2; border-radius: 9px; background: #fff; color: #34725d; font-size: 13px; font-weight: 700; cursor: pointer; }
+.note-back-button:hover { border-color: #91c5ae; background: #f3faf5; }
+.note-back-button span { font-size: 17px; line-height: 1; }
+.note-reader-date { color: #84928a; font-size: 12px; }
+.note-reader-card { padding: clamp(22px, 5vw, 42px); border: 1px solid #deebe4; border-radius: 18px; background: #fff; box-shadow: 0 12px 36px rgb(32 68 57 / 6%); }
+.note-reader-heading { margin-bottom: 26px; padding-bottom: 20px; border-bottom: 1px solid #eaf1ed; }
+.note-reader-heading h1 { margin: 8px 0 0; color: #1d3934; font: 700 clamp(26px, 4vw, 38px)/1.2 "Manrope", sans-serif; letter-spacing: -1.1px; }
+.note-reader-markdown { color: #455954; font-size: 15px; line-height: 1.8; }
+.note-reader-markdown h4 { margin: 22px 0 7px; color: #294b40; font: 700 16px/1.4 "Manrope", sans-serif; }
+.note-reader-markdown blockquote { margin: 0 0 20px; color: #7e8d84; font-size: 12px; }
+.note-reader-status { color: #71837a; font-size: 14px; }
+.note-reader-error { padding: 14px; border: 1px solid #efd4ca; border-radius: 10px; background: #fff8f5; color: #91523e; font-size: 13px; }
+.note-reader-error p { margin: 0 0 10px; }
+.note-reader-error button { border: 0; background: transparent; color: #80513e; font-size: 12px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.library-backdrop { position: fixed; z-index: 80; inset: 0; display: flex; visibility: hidden; background: rgb(14 25 19 / 0%); opacity: 0; pointer-events: none; transition: opacity .24s ease, visibility .24s ease, background .24s ease; }
+.library-backdrop.is-open { visibility: visible; background: rgb(14 25 19 / 35%); opacity: 1; pointer-events: auto; }
+.library-drawer { display: flex; width: min(390px, calc(100vw - 34px)); height: 100%; flex-direction: column; padding: 26px 20px 17px; border-right: 1px solid #e2ebe5; background: #f9fbf9; box-shadow: 18px 0 48px rgb(20 44 32 / 12%); transform: translateX(-103%); transition: transform .3s cubic-bezier(.2,.75,.25,1); }
+.library-backdrop.is-open .library-drawer { transform: translateX(0); }
+.library-drawer-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.library-drawer-heading .eyebrow { font-size: 9px; letter-spacing: 1.25px; }
+.library-drawer-heading h2 { margin: 5px 0 0; color: #1d3934; font: 700 25px/1.2 "Manrope", sans-serif; letter-spacing: -.6px; }
+.library-close { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid #dce7e2; border-radius: 50%; background: #fff; color: #64766d; font-size: 23px; line-height: 1; cursor: pointer; }
+.library-close:hover { border-color: #9bcab8; color: #26775f; }
+.library-intro { margin: 8px 0 20px; color: #7b8982; font-size: 12px; line-height: 1.6; }
+.library-content { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+.library-search { display: flex; flex: 0 0 auto; align-items: center; gap: 9px; margin-bottom: 14px; padding: 0 11px; border: 1px solid #e0e9e3; border-radius: 10px; background: #fff; color: #809088; }
+.library-search:focus-within { border-color: #83bba0; box-shadow: 0 0 0 3px rgb(80 161 125 / 10%); }
+.library-search svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.library-search input { width: 100%; min-width: 0; height: 40px; border: 0; outline: 0; background: transparent; color: #344f43; font: inherit; font-size: 12px; }
+.library-search input::placeholder { color: #9aa59e; }
+.library-note-list { display: grid; gap: 7px; overflow-y: auto; padding: 2px 3px 12px 0; }
+.library-note-group { display: grid; gap: 7px; }
+.library-note-group + .library-note-group { margin-top: 8px; }
+.library-note-group h3 { margin: 5px 2px 2px; color: #87948c; font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+.library-no-results { padding: 24px 8px; color: #7d8b83; font-size: 12px; text-align: center; }
+.library-note-item { display: flex; min-width: 0; align-items: center; gap: 11px; padding: 12px 10px; border: 1px solid #e3ebe6; border-radius: 12px; background: #fff; color: #36564a; text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+.library-note-item:hover { transform: translateX(3px); border-color: #9acbb5; box-shadow: 0 6px 18px rgb(38 119 95 / 8%); }
+.library-note-icon { display: grid; flex: 0 0 35px; width: 35px; height: 35px; place-items: center; border-radius: 10px; background: #eaf5ee; color: #32866d; font-size: 17px; }
+.library-note-copy { display: grid; min-width: 0; flex: 1; gap: 4px; }
+.library-note-copy strong { overflow: hidden; color: #2b483d; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.library-note-copy small { color: #89958e; font-size: 10px; }
+.library-note-chevron { color: #92a098; font-size: 23px; line-height: 1; }
+.library-state { display: grid; min-height: 145px; align-content: center; justify-items: center; gap: 9px; padding: 20px 12px; color: #718179; font-size: 12px; text-align: center; }
+.library-empty-state { margin: auto 0; padding: 24px 14px; }
+.library-empty-state strong { max-width: 245px; color: #3b574a; font-size: 14px; line-height: 1.5; }
+.library-empty-state p { max-width: 270px; margin: 0; color: #7d8b83; font-size: 12px; line-height: 1.65; }
+.library-state-icon { display: grid; width: 43px; height: 43px; place-items: center; border-radius: 14px; background: #eaf5ee; color: #32866d; font-size: 21px; }
+.library-action-button { min-height: 37px; margin-top: 5px; padding: 0 13px; border: 0; border-radius: 9px; background: #287d68; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
+.library-action-button:hover { background: #216b58; }
+.library-spinner { width: 18px; height: 18px; border: 2px solid #d7e7dd; border-top-color: #32866d; border-radius: 50%; animation: access-spin .7s linear infinite; }
+.library-drawer-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid #e5ece7; color: #8a968f; font-size: 10px; line-height: 1.55; }
 .app-shell[data-theme="dark"] .site-footer { color: #9eafa4; }
 .topbar {
   position: sticky;
@@ -469,6 +522,10 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .privacy-flow-network small { color: #7f8e85; font-size: 12px; line-height: 1.5; }
 
 @media (max-width: 680px) {
+  .note-reader-page { width: calc(100% - 30px); min-height: calc(100dvh - 104px); padding: 25px 0 38px; }
+  .note-reader-card { padding: 22px 18px; border-radius: 15px; }
+  .note-reader-heading { margin-bottom: 19px; }
+  .library-drawer { width: min(370px, calc(100vw - 24px)); padding: 22px 16px 14px; }
   .topbar { height: 65px; flex-basis: 65px; padding: 0 16px; }
   .brand { font-size: 18px; }
   .brand-mark { width: 34px; height: 34px; flex-basis: 34px; border-radius: 12px; }
@@ -588,6 +645,39 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
   color: #d6e2da;
   background: #101713;
 }
+.app-shell[data-theme="dark"] .note-back-button,
+.app-shell[data-theme="dark"] .library-close,
+.app-shell[data-theme="dark"] .library-note-item { border-color: #34463c; background: #1a251f; color: #c7d8cc; }
+.app-shell[data-theme="dark"] .note-back-button:hover,
+.app-shell[data-theme="dark"] .library-note-item:hover { border-color: #5b9f7f; background: #203329; }
+.app-shell[data-theme="dark"] .note-reader-date,
+.app-shell[data-theme="dark"] .library-intro,
+.app-shell[data-theme="dark"] .library-note-copy small,
+.app-shell[data-theme="dark"] .library-drawer-footer { color: #9aaba0; }
+.app-shell[data-theme="dark"] .note-reader-card { border-color: #2c3d33; background: #18221c; box-shadow: 0 12px 36px rgb(0 0 0 / 16%); }
+.app-shell[data-theme="dark"] .note-reader-heading { border-color: #2d4035; }
+.app-shell[data-theme="dark"] .note-reader-heading h1,
+.app-shell[data-theme="dark"] .library-drawer-heading h2 { color: #e3eee7; }
+.app-shell[data-theme="dark"] .note-reader-markdown,
+.app-shell[data-theme="dark"] .note-reader-markdown p { color: #c3d1c8; }
+.app-shell[data-theme="dark"] .note-reader-markdown h4 { color: #d7e4db; }
+.app-shell[data-theme="dark"] .note-reader-markdown blockquote { color: #9aaba0; }
+.app-shell[data-theme="dark"] .note-reader-status { color: #aab9af; }
+.app-shell[data-theme="dark"] .note-reader-error { border-color: #60483d; background: #2d221d; color: #f0b49f; }
+.app-shell[data-theme="dark"] .library-backdrop.is-open { background: rgb(0 0 0 / 58%); }
+.app-shell[data-theme="dark"] .library-drawer { border-color: #2d3d33; background: #151f19; box-shadow: 18px 0 48px rgb(0 0 0 / 28%); }
+.app-shell[data-theme="dark"] .library-close { background: #1d2a23; color: #bfcec4; }
+.app-shell[data-theme="dark"] .library-search { border-color: #34463c; background: #1a251f; color: #9aaba0; }
+.app-shell[data-theme="dark"] .library-search input { color: #d2dfd6; }
+.app-shell[data-theme="dark"] .library-no-results,
+.app-shell[data-theme="dark"] .library-note-group h3 { color: #9aaba0; }
+.app-shell[data-theme="dark"] .library-note-icon,
+.app-shell[data-theme="dark"] .library-state-icon { background: #263b2e; color: #9bdbbb; }
+.app-shell[data-theme="dark"] .library-note-copy strong,
+.app-shell[data-theme="dark"] .library-empty-state strong { color: #d4e1d8; }
+.app-shell[data-theme="dark"] .library-empty-state p,
+.app-shell[data-theme="dark"] .library-state { color: #aab9af; }
+.app-shell[data-theme="dark"] .library-drawer-footer { border-color: #2d3b32; }
 .app-shell[data-theme="dark"] .topbar { background: #141d18; border-color: #293830; box-shadow: 0 4px 18px rgb(0 0 0 / 18%); }
 .app-shell[data-theme="dark"] .composer-dock { background: transparent; border-color: transparent; }
 .app-shell[data-theme="dark"] .profile-button { border-color: #35473d; background: #1d2a23; color: #b9d8c5; }

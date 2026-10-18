@@ -16,7 +16,8 @@ Learning should be clear, adaptable, and led by the learner. EasyLearn runs
 answer generation on the learner’s device by default, lets them choose how
 deeply to explore a topic, and makes live web search an optional way to bring
 current sources into an answer. A lesson is shared with Google Drive only when
-the learner chooses to save it.
+the learner chooses to save it. The Library can list and open EasyLearn notes
+saved in the app’s Drive folder.
 
 ---
 
@@ -53,8 +54,10 @@ learner enables **Web search**, EasyLearn finds relevant current sources and
 uses them to inform a locally generated answer. When a learner chooses
 **Save to Drive**, the
 browser requests Google Drive access with the `drive.file` scope and uploads
-that lesson as a Markdown file to an `EasyLearn` folder. The Drive access token
-stays in browser memory.
+that lesson as a Markdown file to an `EasyLearn` folder. The Library uses the
+same permission to list those saved notes and open one in EasyLearn. The Drive
+access token stays in browser memory; the app does not search unrelated Drive
+files.
 
 ---
 
@@ -106,7 +109,8 @@ npm run dev
 
 Open the local URL printed by Vite (usually `http://localhost:5173`). Choose a
 model, wait for its first download, then ask a question. Google sign-in is
-optional; sign in and authorize Drive when you want to save a lesson there.
+optional; sign in and authorize Drive when you want to save a lesson or open
+your Library.
 
 ---
 
@@ -151,7 +155,8 @@ hosting providers, use HTTPS, set the production frontend origin in
   `localStorage`; this metadata does not include question or answer text.
 - Google receives sign-in and Drive requests. A sign-in credential is sent to
   the backend for verification. A lesson is sent to Drive only after the
-  learner chooses **Save to Drive**.
+  learner chooses **Save to Drive**; Library requests read EasyLearn notes
+  from the app folder.
 - Model files, Google sign-in assets, and fonts are fetched from their
   respective providers. Those requests can reveal ordinary connection details
   such as IP address and requested resources.
