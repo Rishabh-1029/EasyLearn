@@ -460,6 +460,44 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .docs-steps-visual li p { margin: 0; color: #6b7b73; font-size: 12px; line-height: 1.65; }
 .docs-steps strong, .docs-boundary-grid strong { color: #304d42; font-size: 15px; }
 .docs-steps p, .docs-boundary-grid p { margin: 4px 0 0; color: #6b7b73; font-size: 14px; line-height: 1.7; }
+.interactive-flow { margin-top: 22px; padding: clamp(14px, 2.6vw, 22px); border: 1px solid #dfeae3; border-radius: 17px; background: linear-gradient(145deg, #fff, #f7faf8); box-shadow: 0 10px 30px rgb(37 75 61 / 5%); }
+.interactive-flow-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 20px; }
+.interactive-flow-controls > p { margin: 0; color: #78877f; font-size: 11px; line-height: 1.5; }
+.interactive-flow-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid #e1eae5; border-radius: 10px; background: #f2f7f3; }
+.interactive-flow-toggle > span { padding: 0 7px; color: #65786d; font-size: 11px; font-weight: 700; }
+.interactive-flow-toggle button { min-height: 29px; padding: 0 10px; border: 0; border-radius: 7px; background: transparent; color: #76867d; font-size: 11px; font-weight: 700; cursor: pointer; }
+.interactive-flow-toggle button[aria-pressed="true"] { background: #fff; color: #287d68; box-shadow: 0 1px 4px rgb(30 65 48 / 12%); }
+.query-flow-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 20px; }
+.query-flow-map { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr); gap: 19px; margin: 0; overflow: visible; }
+.query-flow-explanation { min-width: 0; }
+.query-flow-stage-wrap { position: relative; min-width: 0; }
+.query-flow-stage { display: flex; width: 100%; min-height: 68px; flex-direction: row; align-items: center; gap: 12px; padding: 12px 15px; border: 1px solid #dce9e1; border-radius: 12px; background: #fff; color: #3c5c4e; text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, opacity .16s ease; }
+.query-flow-stage:hover { transform: translateY(-2px); border-color: #90c6ab; box-shadow: 0 6px 17px rgb(37 75 61 / 8%); }
+.query-flow-stage.is-active { border-color: #4f9e7d; background: #eef8f1; box-shadow: 0 0 0 3px rgb(79 158 125 / 12%); }
+.query-flow-stage-index { display: grid; width: 27px; height: 23px; place-items: center; border: 1px solid #cfe5d7; border-radius: 7px; background: #e8f5ed; color: #398466; font-size: 9px; font-weight: 800; letter-spacing: .4px; }
+.query-flow-stage strong { flex: 1; color: #304d42; font-size: 12px; line-height: 1.35; }
+.query-flow-stage small { margin-left: auto; color: #829087; font-size: 9px; }
+.query-flow-stage.stage-search .query-flow-stage-index,
+.query-flow-stage.stage-rank .query-flow-stage-index { border-color: #d4e1ef; background: #edf3fa; color: #537ca7; }
+.query-flow-stage.stage-webllm .query-flow-stage-index { border-color: #e1d5ef; background: #f3edf9; color: #8263a4; }
+.query-flow-stage.stage-webgpu .query-flow-stage-index { border-color: #d4e5ef; background: #edf6fa; color: #537f9a; }
+.query-flow-stage-wrap.is-bypassed .query-flow-stage { border-style: dashed; background: #f6f8f6; opacity: .62; }
+.query-flow-arrow { position: absolute; right: 50%; bottom: -20px; z-index: 2; display: grid; width: 20px; height: 20px; place-items: center; color: #6da889; font-size: 16px; line-height: 1; transform: translateX(50%); pointer-events: none; }
+.query-flow-detail { display: grid; grid-template-columns: 65px minmax(0, 1fr); gap: 12px; margin-top: 0; padding: 15px; border: 1px solid #dfeae3; border-radius: 12px; background: #fff; }
+.query-flow-detail-index { display: grid; width: 55px; height: 25px; place-items: center; border-radius: 8px; background: #eaf5ee; color: #388367; font-size: 9px; font-weight: 800; letter-spacing: .5px; }
+.query-flow-detail h3 { margin: 0 0 5px; color: #304d42; font: 700 14px/1.35 "Manrope", sans-serif; }
+.query-flow-detail p { margin: 0; color: #65776d; font-size: 12px; line-height: 1.7; }
+.query-flow-save { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 11px; margin-top: 17px; padding: 14px; border: 1px dashed #a8cbb5; border-radius: 12px; background: #f4faf5; }
+.query-flow-save-branch { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid #cfe5d7; border-radius: 9px; background: #e7f4eb; color: #398466; font-size: 19px; }
+.query-flow-save-content { min-width: 0; }
+.query-flow-save-label { display: block; margin-bottom: 5px; color: #72877b; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
+.query-flow-save-button { display: flex; width: 100%; align-items: center; gap: 8px; padding: 4px 0; border: 0; background: transparent; color: #30765f; font-size: 13px; font-weight: 800; text-align: left; cursor: pointer; }
+.query-flow-save-button > span:last-child { margin-left: auto; font-size: 17px; }
+.query-flow-save-detail { padding: 8px 0 0; color: #61766a; }
+.query-flow-save-detail p { margin: 0 0 8px; font-size: 11px; line-height: 1.65; }
+.query-flow-save-detail ol { display: grid; gap: 5px; margin: 0; padding-left: 18px; font-size: 10px; line-height: 1.55; }
+.query-flow-save-detail code { padding: 1px 4px; border-radius: 4px; background: #e8f2eb; color: #28634f; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .95em; }
+.query-flow-footnote { margin: 13px 1px 0 !important; color: #87948c !important; font-size: 10px !important; line-height: 1.6 !important; }
 .docs-mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; margin: 21px 0 15px; }
 .docs-mode-card { display: flex; flex-direction: column; min-width: 0; padding: 16px 15px; border: 1px solid #e1eae5; border-top: 3px solid #5aa486; border-radius: 12px; background: #fff; }
 .docs-mode-card.guided { border-top-color: #7296bb; }
@@ -588,6 +626,12 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
   .privacy-flow-steps > div { min-height: 52px; justify-content: flex-start; }
   .privacy-flow-steps > b { justify-self: center; font-size: 16px; line-height: .8; transform: rotate(90deg); }
   .docs-layout { grid-template-columns: 1fr; gap: 15px; }
+  .query-flow-map { gap: 19px; }
+  .query-flow-columns { grid-template-columns: 1fr; gap: 22px; }
+  .query-flow-stage { min-height: 64px; padding: 11px 12px; }
+  .query-flow-controls { align-items: flex-start; }
+  .query-flow-detail { grid-template-columns: 1fr; gap: 8px; }
+  .interactive-flow-controls { align-items: flex-start; flex-direction: column; }
   .docs-toc { position: static; display: flex; flex-wrap: wrap; gap: 5px; padding: 0 0 15px; border-bottom: 1px solid #e6ede9; }
   .docs-toc strong { flex: 0 0 100%; margin-bottom: 2px; }
   .docs-toc a { padding: 6px 8px; border: 1px solid #e1eae5; border-radius: 999px; font-size: 12px; }
@@ -878,6 +922,7 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .app-shell[data-theme="dark"] .docs-steps strong,
 .app-shell[data-theme="dark"] .docs-boundary-grid strong,
 .app-shell[data-theme="dark"] .docs-tech-grid h3,
+.app-shell[data-theme="dark"] .query-flow-detail h3,
 .app-shell[data-theme="dark"] .docs-flow strong,
 .app-shell[data-theme="dark"] .docs-model-list > strong,
 .app-shell[data-theme="dark"] .docs-model-list b { color: #d7e4db; }
@@ -887,6 +932,33 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visi
 .app-shell[data-theme="dark"] .docs-tech-grid > article,
 .app-shell[data-theme="dark"] .docs-boundary-grid > div,
 .app-shell[data-theme="dark"] .docs-steps-visual li { border-color: #2c3d33; background: #18221c; }
+.app-shell[data-theme="dark"] .interactive-flow { border-color: #2d4035; background: linear-gradient(145deg, #18221c, #151f19); box-shadow: 0 10px 30px rgb(0 0 0 / 16%); }
+.app-shell[data-theme="dark"] .interactive-flow-controls > p,
+.app-shell[data-theme="dark"] .query-flow-stage small,
+.app-shell[data-theme="dark"] .query-flow-save-label,
+.app-shell[data-theme="dark"] .query-flow-footnote { color: #9aaba0 !important; }
+.app-shell[data-theme="dark"] .interactive-flow-toggle { border-color: #34463c; background: #151f19; }
+.app-shell[data-theme="dark"] .interactive-flow-toggle > span { color: #aab9af; }
+.app-shell[data-theme="dark"] .interactive-flow-toggle button { color: #a3b4a9; }
+.app-shell[data-theme="dark"] .interactive-flow-toggle button[aria-pressed="true"] { background: #263b2e; color: #9bdbbb; }
+.app-shell[data-theme="dark"] .query-flow-stage { border-color: #34463c; background: #1a251f; color: #c7d8cc; }
+.app-shell[data-theme="dark"] .query-flow-stage.is-active { border-color: #5b9f7f; background: #203329; box-shadow: 0 0 0 3px rgb(104 184 145 / 12%); }
+.app-shell[data-theme="dark"] .query-flow-stage strong { color: #d4e1d8; }
+.app-shell[data-theme="dark"] .query-flow-stage-index,
+.app-shell[data-theme="dark"] .query-flow-stage.stage-search .query-flow-stage-index,
+.app-shell[data-theme="dark"] .query-flow-stage.stage-rank .query-flow-stage-index,
+.app-shell[data-theme="dark"] .query-flow-stage.stage-webllm .query-flow-stage-index,
+.app-shell[data-theme="dark"] .query-flow-stage.stage-webgpu .query-flow-stage-index { border-color: #365445; background: #263b2e; color: #9bdbbb; }
+.app-shell[data-theme="dark"] .query-flow-stage-wrap.is-bypassed .query-flow-stage { border-color: #34463c; background: #151d18; }
+.app-shell[data-theme="dark"] .query-flow-arrow { color: #7bb597; }
+.app-shell[data-theme="dark"] .query-flow-detail { border-color: #2d4035; background: #1a251f; }
+.app-shell[data-theme="dark"] .query-flow-detail-index { background: #263b2e; color: #9bdbbb; }
+.app-shell[data-theme="dark"] .query-flow-detail p,
+.app-shell[data-theme="dark"] .query-flow-save-detail { color: #b1c0b6; }
+.app-shell[data-theme="dark"] .query-flow-save { border-color: #365545; background: #1b2a21; }
+.app-shell[data-theme="dark"] .query-flow-save-branch { border-color: #365445; background: #263b2e; color: #9bdbbb; }
+.app-shell[data-theme="dark"] .query-flow-save-button { color: #9bdbbb; }
+.app-shell[data-theme="dark"] .query-flow-save-detail code { background: #263b2e; color: #9bdbbb; }
 .app-shell[data-theme="dark"] .docs-steps li > span,
 .app-shell[data-theme="dark"] .docs-tech-icon { background: #263b2e; color: #9bdbbb; }
 .app-shell[data-theme="dark"] .docs-steps-visual li > .docs-step-index,

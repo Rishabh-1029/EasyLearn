@@ -1013,6 +1013,130 @@ function PrivacyPage() {
   );
 }
 
+const QUERY_FLOW_STEPS = [
+  {
+    id: "input",
+    title: "Question + choices",
+    label: "01",
+    detail: "The browser keeps the current question and uses your selected learning depth and model choice to configure the request. Earlier turns are not added.",
+  },
+  {
+    id: "search",
+    title: "Find candidates",
+    label: "02",
+    detail: "When Web search is on, the browser sends the question to EasyLearn’s backend. The backend asks DuckDuckGo Search (DDGS) for up to five candidate pages. When search is off, this branch is skipped.",
+  },
+  {
+    id: "rank",
+    title: "Extract + rank",
+    label: "03",
+    detail: "The backend fetches accessible pages, extracts their main text, splits it into chunks, and scores each chunk by the share of question keywords it contains. It returns up to three top-ranked chunks from distinct pages; a search snippet can be used if a page cannot be read.",
+  },
+  {
+    id: "prompt",
+    title: "Assemble prompt",
+    label: "04",
+    detail: "EasyLearn combines the selected teaching instructions with the current question. If search is on, retrieved excerpts are added with instructions to treat them as untrusted evidence and cite them. The prompt is sent to the local model runtime.",
+  },
+  {
+    id: "webllm",
+    title: "WebLLM in a worker",
+    label: "05",
+    detail: "WebLLM loads the selected model and runs chat completion in a Web Worker, away from the page’s interface thread. Model files are downloaded when needed and can be reused from the browser cache.",
+  },
+  {
+    id: "webgpu",
+    title: "WebGPU computes",
+    label: "06",
+    detail: "WebLLM uses the browser’s WebGPU interface to dispatch model computation to a compatible GPU on this device. The model produces the answer a token at a time; memory use and speed depend on the browser and hardware.",
+  },
+  {
+    id: "output",
+    title: "Answer reaches you",
+    label: "07",
+    detail: "The worker returns the completion to the page. EasyLearn parses the response sections and renders the lesson and any source references in the conversation.",
+  },
+];
+
+function InteractiveQueryFlow() {
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
+  const [activeStep, setActiveStep] = useState("input");
+  const [saveExpanded, setSaveExpanded] = useState(false);
+  const selectedStep = QUERY_FLOW_STEPS.find((step) => step.id === activeStep) || QUERY_FLOW_STEPS[0];
+  const searchStep = activeStep === "search" || activeStep === "rank";
+
+  return (
+    <div className="interactive-flow">
+      <div className="interactive-flow-controls">
+        <div className="interactive-flow-toggle" role="group" aria-label="Choose the web search path">
+          <span>Web search</span>
+          <button type="button" aria-pressed={!webSearchEnabled} onClick={() => setWebSearchEnabled(false)}>Off</button>
+          <button type="button" aria-pressed={webSearchEnabled} onClick={() => setWebSearchEnabled(true)}>On</button>
+        </div>
+        <p>{webSearchEnabled ? "The retrieval branch is active for this example." : "Search is off by default, so the question goes straight to prompt assembly."}</p>
+      </div>
+
+      <div className="query-flow-columns">
+        <div className="query-flow-map" aria-label="Interactive query processing stages">
+          {QUERY_FLOW_STEPS.map((step, index) => {
+            const bypassed = !webSearchEnabled && (step.id === "search" || step.id === "rank");
+            return (
+              <div className={`query-flow-stage-wrap${bypassed ? " is-bypassed" : ""}`} key={step.id}>
+                <button
+                  type="button"
+                  className={`query-flow-stage stage-${step.id}${activeStep === step.id ? " is-active" : ""}`}
+                  aria-pressed={activeStep === step.id}
+                  aria-describedby="query-flow-detail"
+                  onClick={() => setActiveStep(step.id)}
+                >
+                  <span className="query-flow-stage-index">{step.label}</span>
+                  <strong>{step.title}</strong>
+                  {bypassed && <small>Skipped</small>}
+                  {!bypassed && (step.id === "search" || step.id === "rank") && <small>Search branch</small>}
+                </button>
+                {index < QUERY_FLOW_STEPS.length - 1 && <span className="query-flow-arrow" aria-hidden="true">↓</span>}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="query-flow-explanation">
+          <section className="query-flow-detail" id="query-flow-detail" aria-live="polite" aria-atomic="true">
+            <span className="query-flow-detail-index">STEP {selectedStep.label}</span>
+            <div>
+              <h3>{selectedStep.title}</h3>
+              <p>{searchStep && !webSearchEnabled
+                ? "This optional stage is bypassed while Web search is off. No search request is sent; the current question goes directly into the local prompt."
+                : selectedStep.detail}</p>
+            </div>
+          </section>
+
+          <div className="query-flow-save">
+            <span className="query-flow-save-branch" aria-hidden="true">↳</span>
+            <div className="query-flow-save-content">
+              <span className="query-flow-save-label">OPTIONAL BRANCH AFTER THE ANSWER</span>
+              <button type="button" className="query-flow-save-button" aria-expanded={saveExpanded} onClick={() => setSaveExpanded((expanded) => !expanded)}>
+                <span aria-hidden="true">▣</span> Save to Google Drive <span aria-hidden="true">{saveExpanded ? "−" : "+"}</span>
+              </button>
+              {saveExpanded && (
+                <div className="query-flow-save-detail">
+                  <p>Only after you choose <b>Save to Drive</b>, the browser creates a Markdown note containing the question and lesson, then uploads it directly to your EasyLearn folder in Drive.</p>
+                  <ol>
+                    <li>Google grants a short-lived token with the <code>drive.file</code> scope.</li>
+                    <li>The browser uploads the note directly to Google Drive; EasyLearn’s backend does not receive its contents.</li>
+                    <li>The saved note appears in your Library and can be opened in the app.</li>
+                  </ol>
+                </div>
+              )}
+            </div>
+          </div>
+          <p className="query-flow-footnote">The search branch retrieves evidence; the final answer is still generated locally by your selected model.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function DocumentationPage() {
   return (
     <section
@@ -1066,7 +1190,7 @@ function DocumentationPage() {
           <a href="#using-easylearn">How to use it</a>
           <a href="#learning-modes">Learning modes</a>
           <a href="#technology">Technology</a>
-          <a href="#request-flow">A request, step by step</a>
+          <a href="#request-flow">Interactive query flow</a>
           <a href="#web-search-flow">Live web search</a>
           <a href="#data-and-limits">Data and practical limits</a>
         </nav>
@@ -1280,47 +1404,9 @@ function DocumentationPage() {
             <span className="docs-section-number">
               05 / FROM QUESTION TO ANSWER
             </span>
-            <h2>A request, step by step</h2>
-            <ol className="docs-flow">
-              <li>
-                <strong>Choose mode</strong>
-                <span>
-                  The selected mode maps deterministically to its system prompt
-                  and output token limit.
-                </span>
-              </li>
-              <li>
-                <strong>Prepare model</strong>
-                <span>
-                  WebLLM loads the selected model in a worker, using the browser
-                  cache when model files are already available.
-                </span>
-              </li>
-              <li>
-                <strong>Run inference</strong>
-                <span>
-                  The app sends the chosen system prompt and current question
-                  to the local model. If web search is enabled, the question
-                  is first sent for retrieval and the returned excerpts are
-                  added to that user message.
-                </span>
-              </li>
-              <li>
-                <strong>Shape the answer</strong>
-                <span>
-                  The response parser extracts the model’s labeled sections and
-                  the UI renders summaries, key ideas, examples, takeaways, and
-                  deep-dive self-checks in suitable components.
-                </span>
-              </li>
-              <li>
-                <strong>Record operations</strong>
-                <span>
-                  The local dashboard records request metadata such as model,
-                  mode, latency, token counts, and status for transparency.
-                </span>
-              </li>
-            </ol>
+            <h2>Follow a query through EasyLearn</h2>
+            <p>Choose whether web search is on, then select a stage to see what happens there. The Save to Drive branch is separate and only starts when you choose to save.</p>
+            <InteractiveQueryFlow />
           </section>
 
           <section id="web-search-flow" className="docs-section">
