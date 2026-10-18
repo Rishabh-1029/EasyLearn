@@ -289,9 +289,7 @@ function getInitialTheme() {
   } catch {
     /* Fall back to the device preference. */
   }
-  return globalThis.matchMedia?.("(prefers-color-scheme: dark)")?.matches
-    ? "dark"
-    : "light";
+  return "light";
 }
 
 const RESPONSE_LABELS = [
